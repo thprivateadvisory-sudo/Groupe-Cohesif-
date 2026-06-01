@@ -802,6 +802,19 @@ footer {
   text-decoration:none; transition:color .2s;
 }
 .footer-legal a:hover { color:rgba(255,255,255,.5); }
+.footer-republic {
+  text-align:center;
+  padding:32px 0 0;
+  margin-top:8px;
+  border-top:1px solid rgba(255,255,255,.07);
+}
+.republic-badge {
+  display:inline-flex; align-items:center; gap:16px;
+  background:rgba(255,255,255,.97);
+  border-radius:8px; padding:10px 20px 10px 16px;
+  box-shadow:0 2px 12px rgba(0,0,0,.18);
+}
+.republic-badge svg { height:46px; width:auto; display:block; }
 
 
 @media(max-width:768px){
@@ -1647,6 +1660,19 @@ footer {
           <li><a href="javascript:void(0)" data-open="confidentialite">Confidentialité</a></li>
           <li><a href="javascript:void(0)" data-open="cgu">CGU</a></li>
         </ul>
+      </div>
+    </div>
+    <div class="footer-republic">
+      <div class="republic-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 212 66" role="img" aria-label="République Française">
+          <rect x="0" y="0" width="12" height="66" fill="#002395"/>
+          <rect x="12" y="0" width="12" height="66" fill="#FFFFFF"/>
+          <rect x="24" y="0" width="12" height="66" fill="#ED2939"/>
+          <line x1="44" y1="8" x2="44" y2="58" stroke="#e0e0e0" stroke-width="1"/>
+          <text x="52" y="25" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-size="17" font-weight="900" fill="#1a1a1a">République</text>
+          <text x="52" y="45" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-size="17" font-weight="900" fill="#1a1a1a">Française</text>
+          <text x="52" y="59" font-family="Arial,sans-serif" font-size="8" fill="#666" letter-spacing="0.4">Liberté · Égalité · Fraternité</text>
+        </svg>
       </div>
     </div>
     <div class="footer-bottom">

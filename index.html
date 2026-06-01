@@ -867,6 +867,47 @@ footer {
   .footer-top { grid-template-columns:1fr; }
   .hero-h1 { font-size:40px; }
 }
+
+/* ─── PLATFORM JOB LINKS ─── */
+.platform-links-section {
+  margin-top:28px;
+  padding-top:24px;
+  border-top:1px solid var(--line);
+  text-align:center;
+}
+.platform-links-label {
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:10px; font-weight:700;
+  letter-spacing:2.5px; text-transform:uppercase;
+  color:var(--slate);
+  margin-bottom:16px;
+}
+.platform-links-row {
+  display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+}
+.platform-link {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:9px 18px;
+  text-decoration:none;
+  border:1.5px solid;
+  background:var(--white);
+  transition:transform .2s, box-shadow .2s, background .2s;
+}
+.platform-link:hover {
+  transform:translateY(-2px);
+  box-shadow:0 6px 16px rgba(0,0,0,.09);
+}
+.platform-link-label {
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:12px; font-weight:700;
+  letter-spacing:1.5px; text-transform:uppercase;
+}
+.ft-link { border-color:#0052B4; }
+.ft-link .platform-link-label { color:#0052B4; }
+.ft-link:hover { background:#f0f5fb; }
+.indeed-link { border-color:#2164F3; }
+.indeed-link .platform-link-label { color:#2164F3; }
+.indeed-link:hover { background:#f0f4ff; }
 </style>
 </head>
 <body>
@@ -1480,6 +1521,26 @@ footer {
           <p style="font-size:13px;font-weight:300;color:var(--ink2);line-height:1.8;margin-bottom:28px;">Vous souhaitez rejoindre l'aventure ? Envoyez-nous une candidature spontanée, nous étudions tous les profils sérieux.</p>
           <a href="#contact" class="cta-gold">Candidature spontanée</a>
           <div style="width:48px;height:1px;background:var(--gold);margin:28px auto 0;"></div>
+          <!-- Platform links -->
+          <div class="platform-links-section">
+            <p class="platform-links-label">Nos offres également sur</p>
+            <div class="platform-links-row">
+              <a href="https://candidat.francetravail.fr/offres/recherche?entreprise=Groupe+Cohesif" target="_blank" rel="noopener noreferrer" class="platform-link ft-link" title="Voir nos offres sur France Travail">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <circle cx="8" cy="4.5" r="2.5" fill="#0052B4"/>
+                  <path d="M1.5 15.5c0-3.59 2.91-6.5 6.5-6.5s6.5 2.91 6.5 6.5" stroke="#0052B4" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <span class="platform-link-label">France Travail</span>
+              </a>
+              <a href="https://fr.indeed.com/emplois?q=Groupe+Cohesif&l=%C3%8Ele-de-France" target="_blank" rel="noopener noreferrer" class="platform-link indeed-link" title="Voir nos offres sur Indeed">
+                <svg width="11" height="16" viewBox="0 0 11 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <circle cx="5.5" cy="2.5" r="2.5" fill="#2164F3"/>
+                  <rect x="3" y="6.5" width="5" height="9.5" rx="1" fill="#2164F3"/>
+                </svg>
+                <span class="platform-link-label">Indeed</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>

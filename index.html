@@ -803,28 +803,18 @@ footer {
 }
 .footer-legal a:hover { color:rgba(255,255,255,.5); }
 .footer-republic {
-  display:flex; flex-direction:column; align-items:center; gap:20px;
-  padding:40px 0 44px;
-  border-top:1px solid rgba(255,255,255,.07);
-  border-bottom:1px solid rgba(255,255,255,.07);
-  margin-bottom:32px;
+  margin:0 -52px 40px;
+  padding:26px 52px;
+  background:#f5f3f0;
+  display:flex; flex-direction:column; align-items:center; gap:16px;
 }
 .republic-eyebrow {
   font-family:'Barlow Condensed',sans-serif;
   font-size:9px; font-weight:700; letter-spacing:3px;
-  text-transform:uppercase; color:rgba(255,255,255,.2);
+  text-transform:uppercase; color:rgba(26,37,53,.4);
 }
-.republic-logos-wrap {
-  display:flex; align-items:center; gap:20px;
-}
-.republic-logo-card {
-  background:rgba(255,255,255,.95);
-  border-radius:8px; padding:12px 20px;
-  display:flex; align-items:center; justify-content:center;
-}
-.republic-logo {
-  height:38px; width:auto; object-fit:contain; display:block;
-}
+.republic-logos-wrap { display:flex; align-items:center; gap:36px; }
+.republic-logo { height:36px; width:auto; object-fit:contain; display:block; }
 
 
 @media(max-width:768px){
@@ -883,6 +873,7 @@ footer {
   .news-card.lead .news-visual { width:100%; height:200px; }
   .footer-top { grid-template-columns:1fr 1fr; }
   footer { padding:52px 28px 28px; }
+  .footer-republic { margin:0 -28px 32px; padding:22px 28px; }
 }
 @media(max-width:600px){
   .poles-grid { grid-template-columns:1fr; }
@@ -1675,12 +1666,8 @@ footer {
     <div class="footer-republic">
       <span class="republic-eyebrow">Ancrage institutionnel</span>
       <div class="republic-logos-wrap">
-        <div class="republic-logo-card">
-          <img src="IMG_1676.png" alt="République Française" class="republic-logo">
-        </div>
-        <div class="republic-logo-card">
-          <img src="IMG_1677.jpeg" alt="BPI France" class="republic-logo">
-        </div>
+        <img src="IMG_1676.png" alt="République Française" class="republic-logo">
+        <img src="IMG_1677.jpeg" alt="BPI France" class="republic-logo">
       </div>
     </div>
     <div class="footer-bottom">

@@ -1,0 +1,24 @@
+# Robots.txt — Groupe Cohesif
+# https://groupecohesif.fr
+
+User-agent: *
+Allow: /
+Disallow:
+
+# Sitemap
+Sitemap: https://groupecohesif.fr/sitemap.xml
+
+# Crawl-delay (suggestion pour ne pas surcharger le serveur)
+Crawl-delay: 5
+
+# Google
+User-agent: Googlebot
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+
+# Google Images
+User-agent: Googlebot-Image
+Allow: /

@@ -800,7 +800,7 @@ nav.compact { height:58px; box-shadow:0 2px 40px rgba(11,28,61,.06); }
 .jobs { display:flex; flex-direction:column; gap:2px; }
 
 .job {
-  display:grid; grid-template-columns:1fr auto auto;
+  display:grid; grid-template-columns:1fr auto auto auto;
   align-items:center; gap:20px;
   padding:22px 28px;
   background:var(--white);
@@ -833,6 +833,18 @@ nav.compact { height:58px; box-shadow:0 2px 40px rgba(11,28,61,.06); }
   transition:color .2s, transform .2s;
 }
 .job:hover .job-arr { color:var(--navy); transform:translateX(4px); }
+.job-status {
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:9px; font-weight:700;
+  letter-spacing:1.5px; text-transform:uppercase;
+  color:#e67e22;
+  padding:5px 10px;
+  border:1px solid rgba(230,126,34,.35);
+  background:rgba(230,126,34,.06);
+  white-space:nowrap;
+  animation:pulse-status 2s ease-in-out infinite;
+}
+@keyframes pulse-status { 0%,100%{opacity:1;} 50%{opacity:.6;} }
 
 /* ─── CONTACT ─── */
 #contact { background:var(--paper); border-top:1px solid var(--line); }
@@ -1747,6 +1759,7 @@ footer {
               <div class="job-title">Responsable de Pôle Automobile</div>
               <div class="job-loc">Paris — Île-de-France · CDI Cadre</div>
             </div>
+            <div class="job-status">Recrutement en cours</div>
             <div class="job-pole-tag">Cohésif Auto</div>
             <div class="job-arr">→</div>
           </a>
@@ -1756,6 +1769,7 @@ footer {
               <div class="job-title">Responsable de Pôle Énergie</div>
               <div class="job-loc">Paris — Île-de-France · CDI Cadre</div>
             </div>
+            <div class="job-status">Recrutement en cours</div>
             <div class="job-pole-tag">Cohésif Energy</div>
             <div class="job-arr">→</div>
           </a>

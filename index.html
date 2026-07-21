@@ -1104,6 +1104,7 @@ footer {
   <div class="nav-center">
     <a href="#about">Le Groupe</a>
     <a href="#poles">Nos Pôles</a>
+    <a href="#equipe">Équipe</a>
     <a href="#news">Actualités</a>
     <a href="#partenaires">Partenaires</a>
   </div>
@@ -1117,6 +1118,7 @@ footer {
 <div class="mobile-menu" id="mob">
   <a href="#about" onclick="toggleMobile()">Le Groupe</a>
   <a href="#poles" onclick="toggleMobile()">Nos Pôles</a>
+  <a href="#equipe" onclick="toggleMobile()">Équipe</a>
   <a href="#news" onclick="toggleMobile()">Actualités</a>
   <a href="#partenaires" onclick="toggleMobile()">Partenaires</a>
   <a href="#contact" onclick="toggleMobile()">Contact</a>
@@ -1417,6 +1419,55 @@ footer {
   </div>
 </div>
 
+<!-- ÉQUIPE -->
+<style>
+#equipe{background:var(--white);border-top:1px solid var(--line);}
+.team-header-wrap{display:grid;grid-template-columns:5fr 7fr;gap:100px;align-items:end;margin-bottom:80px;}
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.team-card{background:var(--white);border:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;transition:box-shadow .3s,transform .3s;}
+.team-card:hover{box-shadow:0 12px 60px rgba(11,28,61,.08);transform:translateY(-4px);}
+.team-photo{position:relative;height:380px;overflow:hidden;flex-shrink:0;}
+.team-photo img{width:100%;height:100%;object-fit:cover;object-position:center 12%;display:block;}
+.team-photo-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(11,28,61,.45) 0%,transparent 55%);}
+.team-bar{height:2px;background:linear-gradient(to right,var(--gold),transparent);opacity:0;transition:opacity .3s;flex-shrink:0;}
+.team-card:hover .team-bar{opacity:1;}
+.team-info{padding:32px 32px 36px;border-top:1px solid var(--line);}
+.team-role{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.team-role::before{content:'';width:20px;height:1px;background:var(--gold);flex-shrink:0;}
+.team-name{font-family:'Playfair Display',serif;font-size:26px;font-weight:500;color:var(--navy);line-height:1.15;margin-bottom:14px;}
+.team-desc{font-size:13px;font-weight:300;line-height:1.8;color:var(--ink2);}
+@media(max-width:1024px){
+  .team-header-wrap{grid-template-columns:1fr;gap:40px;}
+  .team-grid{grid-template-columns:1fr;}
+  .team-photo{height:300px;}
+}
+</style>
+<section id="equipe" class="s-pad" aria-label="Équipe dirigeante du Groupe Cohesif">
+  <div class="max">
+    <div class="team-header-wrap rv">
+      <div>
+        <div class="s-eyebrow"><div class="s-eyebrow-line"></div><span>Direction</span></div>
+        <h2 class="s-title">L'équipe<br><em>du groupe</em></h2>
+        <p class="s-sub">Des profils complémentaires, une ambition commune : construire un groupe solide, respecté et durable sur ses marchés.</p>
+      </div>
+    </div>
+    <div class="team-grid rv2">
+      <div class="team-card">
+        <div class="team-photo">
+          <img src="youssef-aksa.jpeg" alt="Youssef Aksa">
+          <div class="team-photo-overlay"></div>
+        </div>
+        <div class="team-bar"></div>
+        <div class="team-info">
+          <div class="team-role">Responsable Marketing &amp; Développement Commercial</div>
+          <div class="team-name">Youssef Aksa</div>
+          <p class="team-desc">Youssef pilote la stratégie marketing et le développement commercial du groupe. Sa vision et son énergie accompagnent la croissance de Groupe Cohésif sur l'ensemble de ses pôles.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- POLES -->
 <section id="poles" class="s-pad" aria-label="Les cinq pôles d'expertise du Groupe Cohesif">
   <div class="max">
@@ -1517,7 +1568,7 @@ footer {
       <a href="#" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--navy);text-decoration:none;">Toutes les actualités →</a>
     </div>
     <div class="news-layout rv">
-      <a href="#news" class="news-card lead">
+      <a href="#equipe" class="news-card lead">
         <div class="news-visual" style="background-image:url('youssef-aksa.jpeg');background-size:cover;background-position:center 15%;">
           <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(11,28,61,.55) 0%,rgba(11,28,61,.2) 100%);"></div>
           <div class="news-visual-pattern" style="opacity:.3;"></div>

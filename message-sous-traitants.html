@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Message sous-traitants — Groupe Cohésif</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:  #0b1c3d;
+    --navy2: #162d5a;
+    --navy3: #1e3f7a;
+    --gold:  #c9a96e;
+    --white: #ffffff;
+    --ink:   #1a1a2e;
+    --ink2:  #4a4a6a;
+    --bg:    #f8f7f4;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 16px 80px;
+  }
+
+  /* ── Header ─────────────────────────────────────── */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .header-logo {
+    display: inline-block;
+    width: 52px;
+    height: 52px;
+    background: var(--navy);
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .header-logo img { width: 100%; height: 100%; object-fit: cover; }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: .02em;
+    margin-bottom: 6px;
+  }
+
+  .header p {
+    font-size: .85rem;
+    color: var(--ink2);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+  }
+
+  /* ── Card ────────────────────────────────────────── */
+  .card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 32px rgba(11,28,61,.08);
+    max-width: 680px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: var(--navy);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .card-header-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .card-header span {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.7);
+  }
+
+  .card-body {
+    padding: 36px 40px 32px;
+  }
+
+  /* ── Message ─────────────────────────────────────── */
+  .message {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--ink);
+    white-space: pre-wrap;
+  }
+
+  .message p { margin-bottom: 1.15em; }
+  .message p:last-child { margin-bottom: 0; }
+
+  .message .greeting { font-weight: 500; }
+  .message .signature { margin-top: 1.5em; }
+  .message .signature strong {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--navy);
+    margin-top: 4px;
+  }
+
+  /* ── Actions ─────────────────────────────────────── */
+  .card-footer {
+    padding: 0 40px 36px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 24px;
+    border-radius: 6px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background .2s, color .2s, opacity .2s;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--navy);
+    color: var(--white);
+  }
+  .btn-primary:hover { background: var(--navy2); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--navy);
+    border: 1.5px solid var(--navy);
+  }
+  .btn-outline:hover { background: var(--navy); color: var(--white); }
+
+  .btn-success {
+    background: #1a7a4a;
+    color: var(--white);
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+  .btn-success.show { opacity: 1; pointer-events: auto; position: static; }
+
+  /* ── Divider ─────────────────────────────────────── */
+  .divider {
+    height: 1px;
+    background: #ebebf0;
+    margin: 0 40px 28px;
+  }
+
+  /* ── Tips ────────────────────────────────────────── */
+  .tips {
+    max-width: 680px;
+    width: 100%;
+    margin-top: 28px;
+  }
+
+  .tips h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--ink2);
+    margin-bottom: 12px;
+  }
+
+  .tip {
+    background: var(--white);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-size: .88rem;
+    color: var(--ink2);
+    line-height: 1.6;
+  }
+
+  .tip strong { color: var(--ink); }
+
+  /* ── Responsive ──────────────────────────────────── */
+  @media (max-width: 520px) {
+    .card-body, .card-footer { padding-left: 20px; padding-right: 20px; }
+    .card-header { padding-left: 20px; }
+    .divider { margin-left: 20px; margin-right: 20px; }
+    .message { font-size: .95rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <a href="/" class="header-logo" title="Groupe Cohésif">
+    <img src="apple-touch-icon.png" alt="Logo Groupe Cohésif">
+  </a>
+  <h1>Message de relance sous-traitants</h1>
+  <p>Groupe Cohésif — Usage interne</p>
+</div>
+
+<!-- Message card -->
+<div class="card">
+
+  <div class="card-header">
+    <div class="card-header-dot"></div>
+    <span>Message à envoyer après envoi du dossier</span>
+  </div>
+
+  <div class="card-body">
+    <div class="message" id="messageText">
+      <p class="greeting">Bonjour,</p>
+
+      <p>Je vous ai transmis le dossier sous-traitant à remplir. Une fois complété, vous serez intégré(e) à notre base de données et à notre réseau de sous-traitants.</p>
+
+      <p>Rejoindre le Groupe Cohésif en tant que sous-traitant est une belle opportunité, aussi bien pour vous que pour nous.</p>
+
+      <p>Nous recherchons les meilleurs entrepreneurs pour nos clients. En intégrant notre réseau, vous profitez d'un groupe en pleine expansion, bénéficiant d'une belle visibilité et d'une renommée grandissante.</p>
+
+      <p>Par ailleurs, nous mettons en avant nos sous-traitants sur nos réseaux. Si vous le souhaitez, n'hésitez pas à m'envoyer une photo afin que nous puissions vous présenter et partager votre entreprise avec notre communauté.</p>
+
+      <p class="signature">
+        Cordialement,
+        <strong>Groupe Cohésif</strong>
+      </p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card-footer">
+    <button class="btn btn-primary" id="copyBtn" onclick="copyMessage()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+      Copier le message
+    </button>
+    <button class="btn btn-success" id="successBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Copié !
+    </button>
+    <a href="/" class="btn btn-outline">← Retour au site</a>
+  </div>
+
+</div>
+
+<!-- Tips -->
+<div class="tips">
+  <h2>Conseils d'envoi</h2>
+
+  <div class="tip">
+    <strong>Personnalisez l'introduction.</strong> Remplacez "Bonjour" par le prénom ou le nom de l'entrepreneur pour un message plus chaleureux et percutant.
+  </div>
+
+  <div class="tip">
+    <strong>Ajoutez un délai.</strong> Précisez une échéance pour le retour du dossier si nécessaire — par exemple : <em>"d'ici la fin de semaine"</em>.
+  </div>
+
+  <div class="tip">
+    <strong>Photo réseaux sociaux.</strong> Si le sous-traitant accepte, créez un post de présentation sur Instagram / LinkedIn avec son logo et ses domaines d'expertise pour maximiser sa visibilité et la vôtre.
+  </div>
+</div>
+
+<script>
+  function copyMessage() {
+    const lines = [
+      'Bonjour,',
+      '',
+      "Je vous ai transmis le dossier sous-traitant à remplir. Une fois complété, vous serez intégré(e) à notre base de données et à notre réseau de sous-traitants.",
+      '',
+      "Rejoindre le Groupe Cohésif en tant que sous-traitant est une belle opportunité, aussi bien pour vous que pour nous.",
+      '',
+      "Nous recherchons les meilleurs entrepreneurs pour nos clients. En intégrant notre réseau, vous profitez d'un groupe en pleine expansion, bénéficiant d'une belle visibilité et d'une renommée grandissante.",
+      '',
+      "Par ailleurs, nous mettons en avant nos sous-traitants sur nos réseaux. Si vous le souhaitez, n'hésitez pas à m'envoyer une photo afin que nous puissions vous présenter et partager votre entreprise avec notre communauté.",
+      '',
+      'Cordialement,',
+      'Groupe Cohésif'
+    ];
+
+    navigator.clipboard.writeText(lines.join('\n')).then(() => {
+      const copyBtn   = document.getElementById('copyBtn');
+      const successBtn = document.getElementById('successBtn');
+      copyBtn.style.display = 'none';
+      successBtn.classList.add('show');
+      setTimeout(() => {
+        copyBtn.style.display = '';
+        successBtn.classList.remove('show');
+      }, 2500);
+    });
+  }
+</script>
+
+</body>
+</html>

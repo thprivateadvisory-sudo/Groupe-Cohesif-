@@ -1868,16 +1868,16 @@ footer {
           </div>
         </div>
       </div>
-      <div class="contact-form rv2">
+      <form class="contact-form rv2" action="https://formspree.io/f/mzdnndna" method="POST">
         <div class="form-row">
-          <div class="fld"><label>Prénom</label><input type="text" id="f-prenom" placeholder="Jean"></div>
-          <div class="fld"><label>Nom</label><input type="text" id="f-nom" placeholder="Dupont"></div>
+          <div class="fld"><label>Prénom</label><input type="text" id="f-prenom" name="prenom" placeholder="Jean"></div>
+          <div class="fld"><label>Nom</label><input type="text" id="f-nom" name="nom" placeholder="Dupont"></div>
         </div>
-        <div class="fld"><label>Email</label><input type="email" id="f-email" placeholder="jean.dupont@email.fr"></div>
+        <div class="fld"><label>Email</label><input type="email" id="f-email" name="email" placeholder="jean.dupont@email.fr"></div>
         <div class="form-row">
           <div class="fld">
             <label>Objet</label>
-            <select id="f-objet">
+            <select id="f-objet" name="objet">
               <option value="">Sélectionner...</option>
               <option>Demande commerciale</option>
               <option>Partenariat</option>
@@ -1888,7 +1888,7 @@ footer {
           </div>
           <div class="fld">
             <label>Pôle concerné</label>
-            <select id="f-pole">
+            <select id="f-pole" name="pole">
               <option>Groupe (général)</option>
               <option>Cohesif Commerce</option>
               <option>Cohesif Access</option>
@@ -1898,9 +1898,9 @@ footer {
             </select>
           </div>
         </div>
-        <div class="fld"><label>Message</label><textarea id="f-message" placeholder="Décrivez votre demande..."></textarea></div>
-        <button class="form-submit">Envoyer le message</button>
-      </div>
+        <div class="fld"><label>Message</label><textarea id="f-message" name="message" placeholder="Décrivez votre demande..."></textarea></div>
+        <button type="submit" class="form-submit">Envoyer le message</button>
+      </form>
     </div>
   </div>
 </section>
@@ -2324,27 +2324,17 @@ const obs = new IntersectionObserver(entries=>{
 },{threshold:.1});
 document.querySelectorAll('.rv,.rv2,.rv3').forEach(el=>obs.observe(el));
 
-document.querySelector('.form-submit').addEventListener('click', function() {
+document.querySelector('.contact-form').addEventListener('submit', function(e) {
   var prenom = document.getElementById('f-prenom').value.trim();
   var nom = document.getElementById('f-nom').value.trim();
   var email = document.getElementById('f-email').value.trim();
   var objet = document.getElementById('f-objet').value;
-  var pole = document.getElementById('f-pole').value;
   var message = document.getElementById('f-message').value.trim();
   if(!prenom || !nom || !email || !objet || !message) {
+    e.preventDefault();
     alert('Veuillez remplir tous les champs obligatoires (Prénom, Nom, Email, Objet et Message).');
     return;
   }
-  var subject = encodeURIComponent('[' + objet + '] ' + prenom + ' ' + nom);
-  var body = encodeURIComponent(
-    'Prénom : ' + prenom + '\n' +
-    'Nom : ' + nom + '\n' +
-    'Email : ' + email + '\n' +
-    'Objet : ' + objet + '\n' +
-    'Pôle concerné : ' + pole + '\n\n' +
-    'Message :\n' + message
-  );
-  window.location.href = 'mailto:contact@groupecohesif.fr?subject=' + subject + '&body=' + body;
 });
 </script>
 <script type="application/ld+json">

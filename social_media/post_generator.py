@@ -281,7 +281,10 @@ Réponds UNIQUEMENT avec le texte du post, sans introduction ni commentaire."""
         messages=[{"role": "user", "content": prompt}],
     )
 
-    post_text = message.content[0].text.strip()
+    # Le modèle peut retourner un ThinkingBlock avant le TextBlock
+    post_text = next(
+        block.text for block in message.content if hasattr(block, "text")
+    ).strip()
 
     # Garantir que le lien est présent même si Claude l'a omis
     if bu["url"] not in post_text:

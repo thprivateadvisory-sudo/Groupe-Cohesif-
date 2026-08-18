@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Générateur et publieur de posts quotidiens pour Groupe Cohesif.
 
-Publie 1 post par jour sur Facebook Page et LinkedIn Organization,
-en rotation automatique entre les 10 filiales du groupe.
+Publie 2 posts par jour sur Facebook Page et LinkedIn Organization :
+- 9h  : une première filiale en rotation
+- 17h : une deuxième filiale différente
 
 Secrets GitHub requis:
   ANTHROPIC_API_KEY        - Clé API Claude (Anthropic)
   FACEBOOK_PAGE_ID         - ID de la page Facebook professionnelle
-  FACEBOOK_ACCESS_TOKEN    - Token d'accès Page Facebook (ne jamais expirer)
+  FACEBOOK_ACCESS_TOKEN    - Token d'accès Page Facebook
   LINKEDIN_ORGANIZATION_ID - ID de l'organisation LinkedIn (ex: 12345678)
   LINKEDIN_ACCESS_TOKEN    - Token OAuth2 LinkedIn (scope: w_organization_social)
 """
@@ -183,7 +184,6 @@ BUSINESS_UNITS = [
         "services": [
             "Expertise multi-sectorielle",
             "Accompagnement global des projets",
-            "Solutions intégrées",
             "Partenariat long terme",
             "Présence nationale",
         ],
@@ -198,16 +198,24 @@ BUSINESS_UNITS = [
 POST_THEMES = [
     "conseil_pratique",
     "mise_en_avant_service",
-    "temoignage_fictif",
-    "statistique_secteur",
+    "retour_experience",
+    "tendance_secteur",
     "question_engagement",
     "astuce_metier",
     "success_story",
 ]
 
 
-def select_business_unit(today: date) -> dict:
-    """Sélectionne la filiale du jour par rotation ou par override."""
+def select_slot() -> str:
+    """Détermine le créneau : morning (9h) ou evening (17h)."""
+    override = os.environ.get("POST_SLOT", "auto").strip()
+    if override in ("morning", "evening"):
+        return override
+    return "morning" if datetime.utcnow().hour < 12 else "evening"
+
+
+def select_business_unit(today: date, slot: str) -> dict:
+    """Sélectionne la filiale du jour — différente selon le créneau."""
     override = os.environ.get("BUSINESS_UNIT_OVERRIDE", "").strip()
     if override:
         for bu in BUSINESS_UNITS:
@@ -215,16 +223,19 @@ def select_business_unit(today: date) -> dict:
                 return bu
 
     day_of_year = today.timetuple().tm_yday
-    return BUSINESS_UNITS[day_of_year % len(BUSINESS_UNITS)]
+    half = len(BUSINESS_UNITS) // 2 + 1  # décalage de 6 pour 11 filiales
+    offset = 0 if slot == "morning" else half
+    return BUSINESS_UNITS[(day_of_year + offset) % len(BUSINESS_UNITS)]
 
 
-def select_theme(today: date) -> str:
-    """Sélectionne le thème du post selon le jour."""
+def select_theme(today: date, slot: str) -> str:
+    """Sélectionne le thème du post — différent selon le créneau."""
     day_of_year = today.timetuple().tm_yday
-    return POST_THEMES[(day_of_year // len(BUSINESS_UNITS)) % len(POST_THEMES)]
+    offset = 0 if slot == "morning" else len(POST_THEMES) // 2
+    return POST_THEMES[(day_of_year // len(BUSINESS_UNITS) + offset) % len(POST_THEMES)]
 
 
-def generate_post_content(bu: dict, theme: str, today: date) -> dict:
+def generate_post_content(bu: dict, theme: str, today: date, slot: str) -> dict:
     """Génère le contenu du post via Claude API."""
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
@@ -237,48 +248,95 @@ def generate_post_content(bu: dict, theme: str, today: date) -> dict:
     ][today.month - 1]
 
     theme_instructions = {
-        "conseil_pratique": "Donne un conseil pratique et actionnable lié à l'activité",
-        "mise_en_avant_service": "Mets en avant un service spécifique avec ses bénéfices concrets",
-        "temoignage_fictif": "Crée un témoignage client inspirant (fictif mais réaliste, sans nom réel)",
-        "statistique_secteur": "Partage une statistique ou tendance du secteur (réaliste)",
-        "question_engagement": "Pose une question engageante pour susciter des commentaires",
-        "astuce_metier": "Partage une astuce métier experte",
-        "success_story": "Raconte une mini success story d'un projet réussi (fictif mais réaliste)",
+        "conseil_pratique": """Partage un conseil concret et opérationnel qu'un expert terrain donnerait à un professionnel du secteur.
+Le conseil doit être précis, ancré dans une réalité vécue — pas une généralité.
+Structure naturelle : observation terrain → conseil précis → pourquoi ça change vraiment les choses.
+Evite les intro du type 'Voici nos conseils...' — entre directement dans le vif.""",
+
+        "mise_en_avant_service": """Mets en lumière un aspect concret de l'activité avec une approche narrative.
+Commence par un constat terrain (un problème réel rencontré par les clients de la filiale),
+enchaîne sur la façon dont la filiale y répond, avec des détails précis.
+Pas de liste à puces — raconte plutôt qu'énumère. Le lecteur doit se reconnaître dans la situation décrite.""",
+
+        "retour_experience": """Rédige le retour d'expérience d'un client type (fictif, anonymisé, réaliste).
+Utilise des détails crédibles : type de structure précis (club de N3, PME de 30 salariés, mairie de 12 000 hab...),
+le défi concret rencontré, comment la filiale est intervenue, et le résultat tangible.
+Ecris à la troisième personne. Pas de nom réel. Le réalisme des détails fait la crédibilité.""",
+
+        "tendance_secteur": """Prends appui sur une tendance concrète du secteur pour ouvrir une réflexion professionnelle.
+La donnée ou observation doit être plausible et ancrée dans l'actualité du métier.
+Contextualise ensuite par rapport à ce que fait la filiale — sans vendre, juste éclairer.
+Ton analytique, celui d'un praticien qui observe son marché.""",
+
+        "question_engagement": """Pose une vraie question qui interpelle les professionnels du secteur.
+Pas une question rhétorique creuse — une question sur un arbitrage difficile, un choix réel,
+une tension connue dans ce métier. Développe le contexte en 2-3 phrases avant de poser la question,
+pour que le lecteur comprenne l'enjeu. L'objectif : susciter des réponses sincères.""",
+
+        "astuce_metier": """Partage une bonne pratique concrète issue de l'expérience terrain.
+Quelque chose que peu de gens font, ou qui fait vraiment la différence dans ce secteur.
+Ton expert et pédagogique — celui d'un professionnel qui partage ce qu'il a appris,
+pas d'un commercial qui vend. Sois spécifique, pas générique.""",
+
+        "success_story": """Raconte un mini-projet réussi avec une vraie structure narrative : contexte → enjeu → intervention → impact.
+Donne des détails réalistes (type de client, envergure du projet, contrainte clé, résultat mesurable).
+Fictif mais entièrement crédible. Pas de superlatifs — les faits parlent d'eux-mêmes.
+Evite la formule 'nous sommes fiers de' — montre plutôt.""",
     }
 
-    prompt = f"""Tu es le community manager du {bu['name']}, filiale du Groupe Cohesif.
+    system_prompt = """Tu es directeur de la communication de Groupe Cohesif, un groupe français multi-sectoriel.
+Tu as 15 ans d'expérience en communication B2B et tu maîtrises parfaitement les codes des réseaux sociaux professionnels en France.
 
-Contexte de la filiale:
-- Nom: {bu['name']}
-- Slogan: {bu['tagline']}
-- Domaine: {bu['domain']}
-- Services: {', '.join(bu['services'])}
-- Cible: {bu['audience']}
-- Site web: {bu['url']}
+Ton rôle : rédiger des posts qui font autorité dans leur secteur. Tes publications doivent avoir la qualité d'un community manager senior — humaines, expertes, engageantes, jamais commerciales.
 
-Date du jour: {day_name} {today.day} {month_name} {today.year}
-Thème demandé: {theme_instructions[theme]}
+Ce que tu évites absolument :
+- Les formules vides : "Chez [nom], nous sommes fiers de...", "N'hésitez pas à nous contacter", "Des solutions innovantes", "Dans un monde en constante évolution", "Au cœur de vos enjeux"
+- Les listes à puces qui remplacent un vrai propos rédigé
+- Les emojis en début de chaque ligne, comme de la décoration
+- Les superlatifs non justifiés : "leader", "expert incontournable", "numéro 1", "révolutionnaire"
+- Le ton publicitaire ou les phrases de slogan
+- Les introductions génériques avant d'entrer dans le sujet
+- Le mot "solutions" employé de façon abstraite et creuse
+- Les hashtags en milieu de texte (seulement en fin de post)
 
-Crée UN post pour les réseaux sociaux professionnels (Facebook et LinkedIn).
+Ce qui caractérise un bon post professionnel :
+- Une première phrase qui accroche parce qu'elle dit quelque chose de vrai et de précis
+- Un développement qui apporte une vraie valeur : informationnelle, narrative ou réflexive
+- Le ton d'un praticien qui partage son expertise, pas d'un commercial qui vend
+- Des emojis utilisés avec parcimonie (3 à 5 maximum), placés naturellement dans le texte, jamais en décoration
+- Un appel à l'action discret mais clair, qui donne envie — pas une injonction
+- Des hashtags pertinents en fin de post, sur une ligne séparée"""
 
-Contraintes OBLIGATOIRES:
-- Rédigé en français, ton professionnel mais accessible
-- Entre 150 et 280 mots
-- Commence par une accroche forte (1ère phrase percutante)
-- Contient 3-5 emojis pertinents bien placés (pas en excès)
-- Se termine OBLIGATOIREMENT par un appel à l'action incluant le lien du site web: {bu['url']}
-  Exemple de formulation: "🌐 Découvrez nos solutions sur {bu['url']}" ou "Visitez {bu['url']} pour en savoir plus."
-- Se termine par 5-8 hashtags pertinents (#CohesifSport, #{bu['name'].replace(' ', '')}, etc.)
-- Adapté au secteur {bu['domain']}
-- NE mentionne PAS de prix, promotions ou offres spécifiques
-- NE cite PAS de clients réels
+    user_prompt = f"""Filiale : {bu['name']}
+Slogan : {bu['tagline']}
+Secteur : {bu['domain']}
+Services : {', '.join(bu['services'][:4])}
+Cible professionnelle : {bu['audience']}
+Site web : {bu['url']}
 
-Réponds UNIQUEMENT avec le texte du post, sans introduction ni commentaire."""
+Date : {day_name} {today.day} {month_name} {today.year}
+
+Type de post :
+{theme_instructions[theme]}
+
+Contraintes :
+- Entre 150 et 280 mots, pas un mot de plus
+- Rédigé en français, ton professionnel et humain
+- Le lien {bu['url']} doit apparaître dans l'appel à l'action final, de façon naturelle
+  (ex : "Plus d'informations sur {bu['url']}" ou "Retrouvez-nous sur {bu['url']}")
+- Terminer par 5 à 8 hashtags pertinents sur une ligne séparée
+  Inclure obligatoirement : #{bu['name'].replace(' ', '')} #GroupeCohesif
+  Compléter avec des hashtags sectoriels pertinents pour {bu['domain']}
+- Ne pas mentionner de tarifs, offres ou promotions
+- Ne pas citer de noms de clients ou partenaires réels
+
+Ecris uniquement le texte du post, sans titre, sans guillemets, sans commentaire."""
 
     message = client.messages.create(
         model="claude-opus-5",
         max_tokens=1200,
-        messages=[{"role": "user", "content": prompt}],
+        system=system_prompt,
+        messages=[{"role": "user", "content": user_prompt}],
     )
 
     # Le modèle peut retourner un ThinkingBlock avant le TextBlock
@@ -288,12 +346,13 @@ Réponds UNIQUEMENT avec le texte du post, sans introduction ni commentaire."""
 
     # Garantir que le lien est présent même si Claude l'a omis
     if bu["url"] not in post_text:
-        post_text += f"\n\n🌐 Plus d’infos : {bu['url']}"
+        post_text += f"\n\n🌐 {bu['url']}"
 
     return {
         "business_unit": bu["id"],
         "business_unit_name": bu["name"],
         "theme": theme,
+        "slot": slot,
         "text": post_text,
         "date": today.isoformat(),
         "url": bu["url"],
@@ -306,7 +365,7 @@ def post_to_facebook(content: dict) -> dict:
     access_token = os.environ.get("FACEBOOK_ACCESS_TOKEN", "")
 
     if not page_id or not access_token:
-        print("[Facebook] Variables FACEBOOK_PAGE_ID ou FACEBOOK_ACCESS_TOKEN manquantes — publication ignorée")
+        print("[Facebook] Variables manquantes — publication ignorée")
         return {"skipped": True, "reason": "missing_credentials"}
 
     url = f"https://graph.facebook.com/v19.0/{page_id}/feed"
@@ -332,7 +391,7 @@ def post_to_linkedin(content: dict) -> dict:
     access_token = os.environ.get("LINKEDIN_ACCESS_TOKEN", "")
 
     if not org_id or not access_token:
-        print("[LinkedIn] Variables LINKEDIN_ORGANIZATION_ID ou LINKEDIN_ACCESS_TOKEN manquantes — publication ignorée")
+        print("[LinkedIn] Variables manquantes — publication ignorée")
         return {"skipped": True, "reason": "missing_credentials"}
 
     url = "https://api.linkedin.com/v2/ugcPosts"
@@ -346,9 +405,7 @@ def post_to_linkedin(content: dict) -> dict:
         "lifecycleState": "PUBLISHED",
         "specificContent": {
             "com.linkedin.ugc.ShareContent": {
-                "shareCommentary": {
-                    "text": content["text"]
-                },
+                "shareCommentary": {"text": content["text"]},
                 "shareMediaCategory": "NONE",
             }
         },
@@ -364,7 +421,7 @@ def post_to_linkedin(content: dict) -> dict:
         print(f"[LinkedIn] ✓ Post publié avec succès — ID: {post_id}")
         return {"success": True, "post_id": post_id}
     else:
-        print(f"[LinkedIn] ✗ Échec de publication: {response.status_code} — {response.text}")
+        print(f"[LinkedIn] ✗ Échec: {response.status_code} — {response.text}")
         return {"success": False, "error": response.text, "status_code": response.status_code}
 
 
@@ -376,6 +433,7 @@ def save_log(content: dict, fb_result: dict, li_result: dict) -> None:
     log_entry = {
         "timestamp": datetime.utcnow().isoformat() + "Z",
         "date": content["date"],
+        "slot": content["slot"],
         "business_unit": content["business_unit_name"],
         "theme": content["theme"],
         "post_text": content["text"],
@@ -385,6 +443,7 @@ def save_log(content: dict, fb_result: dict, li_result: dict) -> None:
 
     print("\n" + "=" * 60)
     print(f"DATE       : {content['date']}")
+    print(f"CRÉNEAU    : {content['slot']}")
     print(f"FILIALE    : {content['business_unit_name']}")
     print(f"THÈME      : {content['theme']}")
     print(f"FACEBOOK   : {'✓' if fb_result.get('success') else ('— ignoré' if fb_result.get('skipped') else '✗')}")
@@ -401,12 +460,13 @@ def save_log(content: dict, fb_result: dict, li_result: dict) -> None:
 
 def main() -> None:
     today = date.today()
-    bu = select_business_unit(today)
-    theme = select_theme(today)
+    slot = select_slot()
+    bu = select_business_unit(today, slot)
+    theme = select_theme(today, slot)
 
-    print(f"[{today}] Génération du post pour {bu['name']} (thème: {theme})...")
+    print(f"[{today}] Créneau: {slot} | Filiale: {bu['name']} | Thème: {theme}")
 
-    content = generate_post_content(bu, theme, today)
+    content = generate_post_content(bu, theme, today, slot)
     fb_result = post_to_facebook(content)
     li_result = post_to_linkedin(content)
     save_log(content, fb_result, li_result)

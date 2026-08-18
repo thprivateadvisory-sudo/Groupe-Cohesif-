@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Générateur et publieur de posts quotidiens pour Groupe Cohesif.
 
-Publie 1 post par jour sur Facebook Page et LinkedIn Organization,
-en rotation automatique entre les 10 filiales du groupe.
+Publie 2 posts par jour sur Facebook Page et LinkedIn Organization :
+- 9h  : une première filiale en rotation
+- 17h : une deuxième filiale différente
 
 Secrets GitHub requis:
   ANTHROPIC_API_KEY        - Clé API Claude (Anthropic)
   FACEBOOK_PAGE_ID         - ID de la page Facebook professionnelle
-  FACEBOOK_ACCESS_TOKEN    - Token d'accès Page Facebook (ne jamais expirer)
+  FACEBOOK_ACCESS_TOKEN    - Token d'accès Page Facebook
   LINKEDIN_ORGANIZATION_ID - ID de l'organisation LinkedIn (ex: 12345678)
   LINKEDIN_ACCESS_TOKEN    - Token OAuth2 LinkedIn (scope: w_organization_social)
 """
@@ -206,8 +207,16 @@ POST_THEMES = [
 ]
 
 
-def select_business_unit(today: date) -> dict:
-    """Sélectionne la filiale du jour par rotation ou par override."""
+def select_slot() -> str:
+    """Détermine le créneau : morning (9h) ou evening (17h)."""
+    override = os.environ.get("POST_SLOT", "auto").strip()
+    if override in ("morning", "evening"):
+        return override
+    return "morning" if datetime.utcnow().hour < 12 else "evening"
+
+
+def select_business_unit(today: date, slot: str) -> dict:
+    """Sélectionne la filiale du jour — différente selon le créneau."""
     override = os.environ.get("BUSINESS_UNIT_OVERRIDE", "").strip()
     if override:
         for bu in BUSINESS_UNITS:
@@ -215,16 +224,19 @@ def select_business_unit(today: date) -> dict:
                 return bu
 
     day_of_year = today.timetuple().tm_yday
-    return BUSINESS_UNITS[day_of_year % len(BUSINESS_UNITS)]
+    half = len(BUSINESS_UNITS) // 2 + 1  # décalage de 6 pour 11 filiales
+    offset = 0 if slot == "morning" else half
+    return BUSINESS_UNITS[(day_of_year + offset) % len(BUSINESS_UNITS)]
 
 
-def select_theme(today: date) -> str:
-    """Sélectionne le thème du post selon le jour."""
+def select_theme(today: date, slot: str) -> str:
+    """Sélectionne le thème du post — différent selon le créneau."""
     day_of_year = today.timetuple().tm_yday
-    return POST_THEMES[(day_of_year // len(BUSINESS_UNITS)) % len(POST_THEMES)]
+    offset = 0 if slot == "morning" else len(POST_THEMES) // 2
+    return POST_THEMES[(day_of_year // len(BUSINESS_UNITS) + offset) % len(POST_THEMES)]
 
 
-def generate_post_content(bu: dict, theme: str, today: date) -> dict:
+def generate_post_content(bu: dict, theme: str, today: date, slot: str) -> dict:
     """Génère le contenu du post via Claude API."""
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
@@ -246,6 +258,8 @@ def generate_post_content(bu: dict, theme: str, today: date) -> dict:
         "success_story": "Raconte une mini success story d'un projet réussi (fictif mais réaliste)",
     }
 
+    creneau = "du matin" if slot == "morning" else "de l'après-midi"
+
     prompt = f"""Tu es le community manager du {bu['name']}, filiale du Groupe Cohesif.
 
 Contexte de la filiale:
@@ -256,7 +270,7 @@ Contexte de la filiale:
 - Cible: {bu['audience']}
 - Site web: {bu['url']}
 
-Date du jour: {day_name} {today.day} {month_name} {today.year}
+Date du jour: {day_name} {today.day} {month_name} {today.year} ({creneau})
 Thème demandé: {theme_instructions[theme]}
 
 Crée UN post pour les réseaux sociaux professionnels (Facebook et LinkedIn).
@@ -294,6 +308,7 @@ Réponds UNIQUEMENT avec le texte du post, sans introduction ni commentaire."""
         "business_unit": bu["id"],
         "business_unit_name": bu["name"],
         "theme": theme,
+        "slot": slot,
         "text": post_text,
         "date": today.isoformat(),
         "url": bu["url"],
@@ -306,7 +321,7 @@ def post_to_facebook(content: dict) -> dict:
     access_token = os.environ.get("FACEBOOK_ACCESS_TOKEN", "")
 
     if not page_id or not access_token:
-        print("[Facebook] Variables FACEBOOK_PAGE_ID ou FACEBOOK_ACCESS_TOKEN manquantes — publication ignorée")
+        print("[Facebook] Variables manquantes — publication ignorée")
         return {"skipped": True, "reason": "missing_credentials"}
 
     url = f"https://graph.facebook.com/v19.0/{page_id}/feed"
@@ -332,7 +347,7 @@ def post_to_linkedin(content: dict) -> dict:
     access_token = os.environ.get("LINKEDIN_ACCESS_TOKEN", "")
 
     if not org_id or not access_token:
-        print("[LinkedIn] Variables LINKEDIN_ORGANIZATION_ID ou LINKEDIN_ACCESS_TOKEN manquantes — publication ignorée")
+        print("[LinkedIn] Variables manquantes — publication ignorée")
         return {"skipped": True, "reason": "missing_credentials"}
 
     url = "https://api.linkedin.com/v2/ugcPosts"
@@ -346,9 +361,7 @@ def post_to_linkedin(content: dict) -> dict:
         "lifecycleState": "PUBLISHED",
         "specificContent": {
             "com.linkedin.ugc.ShareContent": {
-                "shareCommentary": {
-                    "text": content["text"]
-                },
+                "shareCommentary": {"text": content["text"]},
                 "shareMediaCategory": "NONE",
             }
         },
@@ -364,7 +377,7 @@ def post_to_linkedin(content: dict) -> dict:
         print(f"[LinkedIn] ✓ Post publié avec succès — ID: {post_id}")
         return {"success": True, "post_id": post_id}
     else:
-        print(f"[LinkedIn] ✗ Échec de publication: {response.status_code} — {response.text}")
+        print(f"[LinkedIn] ✗ Échec: {response.status_code} — {response.text}")
         return {"success": False, "error": response.text, "status_code": response.status_code}
 
 
@@ -376,6 +389,7 @@ def save_log(content: dict, fb_result: dict, li_result: dict) -> None:
     log_entry = {
         "timestamp": datetime.utcnow().isoformat() + "Z",
         "date": content["date"],
+        "slot": content["slot"],
         "business_unit": content["business_unit_name"],
         "theme": content["theme"],
         "post_text": content["text"],
@@ -385,6 +399,7 @@ def save_log(content: dict, fb_result: dict, li_result: dict) -> None:
 
     print("\n" + "=" * 60)
     print(f"DATE       : {content['date']}")
+    print(f"CRÉNEAU    : {content['slot']}")
     print(f"FILIALE    : {content['business_unit_name']}")
     print(f"THÈME      : {content['theme']}")
     print(f"FACEBOOK   : {'✓' if fb_result.get('success') else ('— ignoré' if fb_result.get('skipped') else '✗')}")
@@ -401,12 +416,13 @@ def save_log(content: dict, fb_result: dict, li_result: dict) -> None:
 
 def main() -> None:
     today = date.today()
-    bu = select_business_unit(today)
-    theme = select_theme(today)
+    slot = select_slot()
+    bu = select_business_unit(today, slot)
+    theme = select_theme(today, slot)
 
-    print(f"[{today}] Génération du post pour {bu['name']} (thème: {theme})...")
+    print(f"[{today}] Créneau: {slot} | Filiale: {bu['name']} | Thème: {theme}")
 
-    content = generate_post_content(bu, theme, today)
+    content = generate_post_content(bu, theme, today, slot)
     fb_result = post_to_facebook(content)
     li_result = post_to_linkedin(content)
     save_log(content, fb_result, li_result)

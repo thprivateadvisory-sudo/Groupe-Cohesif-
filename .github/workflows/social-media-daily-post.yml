@@ -2,8 +2,10 @@ name: Publication Réseaux Sociaux Quotidienne
 
 on:
   schedule:
-    # 8h UTC = 9h Paris (heure d'hiver) / 10h Paris (heure d'été)
+    # 9h Paris (8h UTC hiver / 7h UTC été)
     - cron: '0 8 * * *'
+    # 17h Paris (16h UTC hiver / 15h UTC été)
+    - cron: '0 16 * * *'
   workflow_dispatch:
     inputs:
       business_unit:
@@ -24,6 +26,15 @@ on:
           - 'net'
           - 'negoce'
           - 'groupe'
+      post_slot:
+        description: 'Créneau (morning=9h, evening=17h, auto=détection automatique)'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - 'auto'
+          - 'morning'
+          - 'evening'
 
 jobs:
   post-social-media:
@@ -51,6 +62,7 @@ jobs:
           LINKEDIN_ORGANIZATION_ID: ${{ secrets.LINKEDIN_ORGANIZATION_ID }}
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
           BUSINESS_UNIT_OVERRIDE: ${{ github.event.inputs.business_unit }}
+          POST_SLOT: ${{ github.event.inputs.post_slot || 'auto' }}
         run: python social_media/post_generator.py
 
       - name: Sauvegarde du log de publication

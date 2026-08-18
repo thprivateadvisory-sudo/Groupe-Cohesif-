@@ -276,7 +276,7 @@ Réponds UNIQUEMENT avec le texte du post, sans introduction ni commentaire."""
 
     message = client.messages.create(
         model="claude-opus-5",
-        max_tokens=600,
+        max_tokens=1200,
         messages=[{"role": "user", "content": prompt}],
     )
 

@@ -38,7 +38,7 @@ BUSINESS_UNITS = [
             "Flotte & transport",
         ],
         "audience": "Présidents de clubs, collectivités locales, mairies",
-        "url": "sport.groupecohesif.fr",
+        "url": "https://sport.groupecohesif.fr",
     },
     {
         "id": "btp",
@@ -53,7 +53,7 @@ BUSINESS_UNITS = [
             "Réhabilitation énergétique",
         ],
         "audience": "Promoteurs, collectivités, entreprises, particuliers",
-        "url": "btp.groupecohesif.fr",
+        "url": "https://btp.groupecohesif.fr",
     },
     {
         "id": "energy",
@@ -68,7 +68,7 @@ BUSINESS_UNITS = [
             "Mobilité électrique pour flottes",
         ],
         "audience": "Entreprises, clubs sportifs, collectivités, particuliers",
-        "url": "energy.groupecohesif.fr",
+        "url": "https://energy.groupecohesif.fr",
     },
     {
         "id": "agro",
@@ -83,7 +83,7 @@ BUSINESS_UNITS = [
             "Restauration collective",
         ],
         "audience": "Restaurants, cantines, clubs sportifs, collectivités",
-        "url": "agro.groupecohesif.fr",
+        "url": "https://agro.groupecohesif.fr",
     },
     {
         "id": "auto",
@@ -98,7 +98,7 @@ BUSINESS_UNITS = [
             "Transport sportif & événementiel",
         ],
         "audience": "Entreprises, associations sportives, collectivités",
-        "url": "auto.groupecohesif.fr",
+        "url": "https://auto.groupecohesif.fr",
     },
     {
         "id": "commerce",
@@ -113,7 +113,7 @@ BUSINESS_UNITS = [
             "Merchandising & PLV",
         ],
         "audience": "Commerçants, distributeurs, grandes surfaces, clubs",
-        "url": "commerce.groupecohesif.fr",
+        "url": "https://commerce.groupecohesif.fr",
     },
     {
         "id": "leasing",
@@ -128,7 +128,7 @@ BUSINESS_UNITS = [
             "Rachat de matériel",
         ],
         "audience": "TPE, PME, associations, clubs sportifs",
-        "url": "leasing.groupecohesif.fr",
+        "url": "https://leasing.groupecohesif.fr",
     },
     {
         "id": "access",
@@ -143,7 +143,7 @@ BUSINESS_UNITS = [
             "Gestion des flux & stades",
         ],
         "audience": "Clubs sportifs, stades, entreprises, collectivités",
-        "url": "access.groupecohesif.fr",
+        "url": "https://access.groupecohesif.fr",
     },
     {
         "id": "net",
@@ -158,7 +158,7 @@ BUSINESS_UNITS = [
             "Cybersécurité",
         ],
         "audience": "Clubs sportifs, entreprises, collectivités, startups",
-        "url": "net.groupecohesif.fr",
+        "url": "https://net.groupecohesif.fr",
     },
     {
         "id": "negoce",
@@ -173,7 +173,7 @@ BUSINESS_UNITS = [
             "Approvisionnement chantiers",
         ],
         "audience": "Artisans, constructeurs, promoteurs, industriels",
-        "url": "negoce.groupecohesif.fr",
+        "url": "https://negoce.groupecohesif.fr",
     },
     {
         "id": "groupe",
@@ -188,7 +188,7 @@ BUSINESS_UNITS = [
             "Présence nationale",
         ],
         "audience": "Dirigeants, investisseurs, collectivités, grands comptes",
-        "url": "groupecohesif.fr",
+        "url": "https://groupecohesif.fr",
     },
 ]
 
@@ -261,12 +261,13 @@ Thème demandé: {theme_instructions[theme]}
 
 Crée UN post pour les réseaux sociaux professionnels (Facebook et LinkedIn).
 
-Contraintes:
+Contraintes OBLIGATOIRES:
 - Rédigé en français, ton professionnel mais accessible
 - Entre 150 et 280 mots
 - Commence par une accroche forte (1ère phrase percutante)
 - Contient 3-5 emojis pertinents bien placés (pas en excès)
-- Inclut un appel à l'action clair à la fin (contact, visite du site, ou question)
+- Se termine OBLIGATOIREMENT par un appel à l'action incluant le lien du site web: {bu['url']}
+  Exemple de formulation: "🌐 Découvrez nos solutions sur {bu['url']}" ou "Visitez {bu['url']} pour en savoir plus."
 - Se termine par 5-8 hashtags pertinents (#CohesifSport, #{bu['name'].replace(' ', '')}, etc.)
 - Adapté au secteur {bu['domain']}
 - NE mentionne PAS de prix, promotions ou offres spécifiques
@@ -276,11 +277,15 @@ Réponds UNIQUEMENT avec le texte du post, sans introduction ni commentaire."""
 
     message = client.messages.create(
         model="claude-opus-5",
-        max_tokens=600,
+        max_tokens=1200,
         messages=[{"role": "user", "content": prompt}],
     )
 
     post_text = message.content[0].text.strip()
+
+    # Garantir que le lien est présent même si Claude l'a omis
+    if bu["url"] not in post_text:
+        post_text += f"\n\n🌐 Plus d’infos : {bu['url']}"
 
     return {
         "business_unit": bu["id"],

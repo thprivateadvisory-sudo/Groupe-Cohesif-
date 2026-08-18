@@ -184,7 +184,6 @@ BUSINESS_UNITS = [
         "services": [
             "Expertise multi-sectorielle",
             "Accompagnement global des projets",
-            "Solutions intégrées",
             "Partenariat long terme",
             "Présence nationale",
         ],
@@ -199,8 +198,8 @@ BUSINESS_UNITS = [
 POST_THEMES = [
     "conseil_pratique",
     "mise_en_avant_service",
-    "temoignage_fictif",
-    "statistique_secteur",
+    "retour_experience",
+    "tendance_secteur",
     "question_engagement",
     "astuce_metier",
     "success_story",
@@ -249,50 +248,95 @@ def generate_post_content(bu: dict, theme: str, today: date, slot: str) -> dict:
     ][today.month - 1]
 
     theme_instructions = {
-        "conseil_pratique": "Donne un conseil pratique et actionnable lié à l'activité",
-        "mise_en_avant_service": "Mets en avant un service spécifique avec ses bénéfices concrets",
-        "temoignage_fictif": "Crée un témoignage client inspirant (fictif mais réaliste, sans nom réel)",
-        "statistique_secteur": "Partage une statistique ou tendance du secteur (réaliste)",
-        "question_engagement": "Pose une question engageante pour susciter des commentaires",
-        "astuce_metier": "Partage une astuce métier experte",
-        "success_story": "Raconte une mini success story d'un projet réussi (fictif mais réaliste)",
+        "conseil_pratique": """Partage un conseil concret et opérationnel qu'un expert terrain donnerait à un professionnel du secteur.
+Le conseil doit être précis, ancré dans une réalité vécue — pas une généralité.
+Structure naturelle : observation terrain → conseil précis → pourquoi ça change vraiment les choses.
+Evite les intro du type 'Voici nos conseils...' — entre directement dans le vif.""",
+
+        "mise_en_avant_service": """Mets en lumière un aspect concret de l'activité avec une approche narrative.
+Commence par un constat terrain (un problème réel rencontré par les clients de la filiale),
+enchaîne sur la façon dont la filiale y répond, avec des détails précis.
+Pas de liste à puces — raconte plutôt qu'énumère. Le lecteur doit se reconnaître dans la situation décrite.""",
+
+        "retour_experience": """Rédige le retour d'expérience d'un client type (fictif, anonymisé, réaliste).
+Utilise des détails crédibles : type de structure précis (club de N3, PME de 30 salariés, mairie de 12 000 hab...),
+le défi concret rencontré, comment la filiale est intervenue, et le résultat tangible.
+Ecris à la troisième personne. Pas de nom réel. Le réalisme des détails fait la crédibilité.""",
+
+        "tendance_secteur": """Prends appui sur une tendance concrète du secteur pour ouvrir une réflexion professionnelle.
+La donnée ou observation doit être plausible et ancrée dans l'actualité du métier.
+Contextualise ensuite par rapport à ce que fait la filiale — sans vendre, juste éclairer.
+Ton analytique, celui d'un praticien qui observe son marché.""",
+
+        "question_engagement": """Pose une vraie question qui interpelle les professionnels du secteur.
+Pas une question rhétorique creuse — une question sur un arbitrage difficile, un choix réel,
+une tension connue dans ce métier. Développe le contexte en 2-3 phrases avant de poser la question,
+pour que le lecteur comprenne l'enjeu. L'objectif : susciter des réponses sincères.""",
+
+        "astuce_metier": """Partage une bonne pratique concrète issue de l'expérience terrain.
+Quelque chose que peu de gens font, ou qui fait vraiment la différence dans ce secteur.
+Ton expert et pédagogique — celui d'un professionnel qui partage ce qu'il a appris,
+pas d'un commercial qui vend. Sois spécifique, pas générique.""",
+
+        "success_story": """Raconte un mini-projet réussi avec une vraie structure narrative : contexte → enjeu → intervention → impact.
+Donne des détails réalistes (type de client, envergure du projet, contrainte clé, résultat mesurable).
+Fictif mais entièrement crédible. Pas de superlatifs — les faits parlent d'eux-mêmes.
+Evite la formule 'nous sommes fiers de' — montre plutôt.""",
     }
 
-    creneau = "du matin" if slot == "morning" else "de l'après-midi"
+    system_prompt = """Tu es directeur de la communication de Groupe Cohesif, un groupe français multi-sectoriel.
+Tu as 15 ans d'expérience en communication B2B et tu maîtrises parfaitement les codes des réseaux sociaux professionnels en France.
 
-    prompt = f"""Tu es le community manager du {bu['name']}, filiale du Groupe Cohesif.
+Ton rôle : rédiger des posts qui font autorité dans leur secteur. Tes publications doivent avoir la qualité d'un community manager senior — humaines, expertes, engageantes, jamais commerciales.
 
-Contexte de la filiale:
-- Nom: {bu['name']}
-- Slogan: {bu['tagline']}
-- Domaine: {bu['domain']}
-- Services: {', '.join(bu['services'])}
-- Cible: {bu['audience']}
-- Site web: {bu['url']}
+Ce que tu évites absolument :
+- Les formules vides : "Chez [nom], nous sommes fiers de...", "N'hésitez pas à nous contacter", "Des solutions innovantes", "Dans un monde en constante évolution", "Au cœur de vos enjeux"
+- Les listes à puces qui remplacent un vrai propos rédigé
+- Les emojis en début de chaque ligne, comme de la décoration
+- Les superlatifs non justifiés : "leader", "expert incontournable", "numéro 1", "révolutionnaire"
+- Le ton publicitaire ou les phrases de slogan
+- Les introductions génériques avant d'entrer dans le sujet
+- Le mot "solutions" employé de façon abstraite et creuse
+- Les hashtags en milieu de texte (seulement en fin de post)
 
-Date du jour: {day_name} {today.day} {month_name} {today.year} ({creneau})
-Thème demandé: {theme_instructions[theme]}
+Ce qui caractérise un bon post professionnel :
+- Une première phrase qui accroche parce qu'elle dit quelque chose de vrai et de précis
+- Un développement qui apporte une vraie valeur : informationnelle, narrative ou réflexive
+- Le ton d'un praticien qui partage son expertise, pas d'un commercial qui vend
+- Des emojis utilisés avec parcimonie (3 à 5 maximum), placés naturellement dans le texte, jamais en décoration
+- Un appel à l'action discret mais clair, qui donne envie — pas une injonction
+- Des hashtags pertinents en fin de post, sur une ligne séparée"""
 
-Crée UN post pour les réseaux sociaux professionnels (Facebook et LinkedIn).
+    user_prompt = f"""Filiale : {bu['name']}
+Slogan : {bu['tagline']}
+Secteur : {bu['domain']}
+Services : {', '.join(bu['services'][:4])}
+Cible professionnelle : {bu['audience']}
+Site web : {bu['url']}
 
-Contraintes OBLIGATOIRES:
-- Rédigé en français, ton professionnel mais accessible
-- Entre 150 et 280 mots
-- Commence par une accroche forte (1ère phrase percutante)
-- Contient 3-5 emojis pertinents bien placés (pas en excès)
-- Se termine OBLIGATOIREMENT par un appel à l'action incluant le lien du site web: {bu['url']}
-  Exemple de formulation: "🌐 Découvrez nos solutions sur {bu['url']}" ou "Visitez {bu['url']} pour en savoir plus."
-- Se termine par 5-8 hashtags pertinents (#CohesifSport, #{bu['name'].replace(' ', '')}, etc.)
-- Adapté au secteur {bu['domain']}
-- NE mentionne PAS de prix, promotions ou offres spécifiques
-- NE cite PAS de clients réels
+Date : {day_name} {today.day} {month_name} {today.year}
 
-Réponds UNIQUEMENT avec le texte du post, sans introduction ni commentaire."""
+Type de post :
+{theme_instructions[theme]}
+
+Contraintes :
+- Entre 150 et 280 mots, pas un mot de plus
+- Rédigé en français, ton professionnel et humain
+- Le lien {bu['url']} doit apparaître dans l'appel à l'action final, de façon naturelle
+  (ex : "Plus d'informations sur {bu['url']}" ou "Retrouvez-nous sur {bu['url']}")
+- Terminer par 5 à 8 hashtags pertinents sur une ligne séparée
+  Inclure obligatoirement : #{bu['name'].replace(' ', '')} #GroupeCohesif
+  Compléter avec des hashtags sectoriels pertinents pour {bu['domain']}
+- Ne pas mentionner de tarifs, offres ou promotions
+- Ne pas citer de noms de clients ou partenaires réels
+
+Ecris uniquement le texte du post, sans titre, sans guillemets, sans commentaire."""
 
     message = client.messages.create(
         model="claude-opus-5",
         max_tokens=1200,
-        messages=[{"role": "user", "content": prompt}],
+        system=system_prompt,
+        messages=[{"role": "user", "content": user_prompt}],
     )
 
     # Le modèle peut retourner un ThinkingBlock avant le TextBlock
@@ -302,7 +346,7 @@ Réponds UNIQUEMENT avec le texte du post, sans introduction ni commentaire."""
 
     # Garantir que le lien est présent même si Claude l'a omis
     if bu["url"] not in post_text:
-        post_text += f"\n\n🌐 Plus d’infos : {bu['url']}"
+        post_text += f"\n\n🌐 {bu['url']}"
 
     return {
         "business_unit": bu["id"],

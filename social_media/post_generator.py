@@ -38,7 +38,7 @@ BUSINESS_UNITS = [
             "Flotte & transport",
         ],
         "audience": "Présidents de clubs, collectivités locales, mairies",
-        "url": "https://sport.groupecohesif.fr",
+        "url": "https://cohesifsport.fr",
     },
     {
         "id": "btp",
@@ -53,7 +53,7 @@ BUSINESS_UNITS = [
             "Réhabilitation énergétique",
         ],
         "audience": "Promoteurs, collectivités, entreprises, particuliers",
-        "url": "https://btp.groupecohesif.fr",
+        "url": "https://cohesifbtp.fr",
     },
     {
         "id": "energy",
@@ -68,7 +68,7 @@ BUSINESS_UNITS = [
             "Mobilité électrique pour flottes",
         ],
         "audience": "Entreprises, clubs sportifs, collectivités, particuliers",
-        "url": "https://energy.groupecohesif.fr",
+        "url": "https://cohesifenergy.fr",
     },
     {
         "id": "agro",
@@ -83,7 +83,7 @@ BUSINESS_UNITS = [
             "Restauration collective",
         ],
         "audience": "Restaurants, cantines, clubs sportifs, collectivités",
-        "url": "https://agro.groupecohesif.fr",
+        "url": "https://cohesifagro.fr",
     },
     {
         "id": "auto",
@@ -98,7 +98,7 @@ BUSINESS_UNITS = [
             "Transport sportif & événementiel",
         ],
         "audience": "Entreprises, associations sportives, collectivités",
-        "url": "https://auto.groupecohesif.fr",
+        "url": "https://cohesifauto.fr",
     },
     {
         "id": "commerce",
@@ -113,7 +113,7 @@ BUSINESS_UNITS = [
             "Merchandising & PLV",
         ],
         "audience": "Commerçants, distributeurs, grandes surfaces, clubs",
-        "url": "https://commerce.groupecohesif.fr",
+        "url": "https://cohesifcommerce.fr",
     },
     {
         "id": "leasing",
@@ -128,7 +128,7 @@ BUSINESS_UNITS = [
             "Rachat de matériel",
         ],
         "audience": "TPE, PME, associations, clubs sportifs",
-        "url": "https://leasing.groupecohesif.fr",
+        "url": "https://cohesifleasing.fr",
     },
     {
         "id": "access",
@@ -143,7 +143,7 @@ BUSINESS_UNITS = [
             "Gestion des flux & stades",
         ],
         "audience": "Clubs sportifs, stades, entreprises, collectivités",
-        "url": "https://access.groupecohesif.fr",
+        "url": "https://cohesifaccess.fr",
     },
     {
         "id": "net",
@@ -158,7 +158,7 @@ BUSINESS_UNITS = [
             "Cybersécurité",
         ],
         "audience": "Clubs sportifs, entreprises, collectivités, startups",
-        "url": "https://net.groupecohesif.fr",
+        "url": "https://cohesifnet.fr",
     },
     {
         "id": "negoce",
@@ -173,7 +173,7 @@ BUSINESS_UNITS = [
             "Approvisionnement chantiers",
         ],
         "audience": "Artisans, constructeurs, promoteurs, industriels",
-        "url": "https://negoce.groupecohesif.fr",
+        "url": "https://cohesifnegoce.fr",
     },
     {
         "id": "groupe",

@@ -196,7 +196,8 @@ Si le post parle d'un sujet hors de ce domaine, c'est une erreur grave. Reste st
 
 STYLE OBLIGATOIRE :
 - 60 à 120 mots maximum — pas un mot de plus
-- Tutoiement direct : "tu", "toi", "ton", "ta"
+- Tutoiement STRICT : "tu", "toi", "ton", "ta" — JAMAIS "on", "nous", "notre", "votre"
+- Tu t'adresses DIRECTEMENT à une seule personne : le client potentiel
 - Phrases courtes et percutantes. Les fragments sont bienvenus.
 - 1 à 2 emojis maximum, placés naturellement
 - Zéro hashtag
@@ -205,7 +206,7 @@ STYLE OBLIGATOIRE :
 
 STRUCTURE :
 1. Accroche forte (question OU constat choc OU chiffre)
-2. 2 à 4 phrases courtes
+2. 2 à 4 phrases courtes en "tu"
 3. 👉 {bu['url']}"""
 
     user_prompt = f"""Filiale : {bu['name']}
@@ -215,7 +216,7 @@ Cible : {bu['audience']}
 
 Angle : {theme_instructions[theme]}
 
-Écris le post. 60 à 120 mots. Tutoiement. Pas de hashtags. Termine par 👉 {bu['url']}
+Écris le post. 60 à 120 mots. Tutoiement strict (tu/ton/ta, jamais on/nous). Pas de hashtags. Termine par 👉 {bu['url']}
 Uniquement le texte du post, sans titre ni commentaire."""
 
     message = client.messages.create(

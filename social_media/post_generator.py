@@ -91,11 +91,11 @@ BUSINESS_UNITS = [
     {
         "id": "access",
         "name": "Cohesif Access",
-        "domain": "contrôle d'accès, vidéosurveillance et sécurité électronique",
-        "services": "systèmes de contrôle d'accès, vidéosurveillance, badges et biométrie, sécurité événementielle, gestion des flux et stades",
-        "audience": "clubs sportifs, stades, entreprises, collectivités",
+        "domain": "réseau privé d'apporteurs d'affaires immobilier et deals off-market",
+        "services": "mise en relation vendeurs et acheteurs qualifiés, accès aux deals immobiliers off-market, commissions de 5 000 € à 40 000 € par deal, accompagnement et formation des apporteurs, portefeuille de notaires et marchands de biens",
+        "audience": "apporteurs d'affaires immobilier, agents immobiliers indépendants, marchands de biens, investisseurs, family offices, notaires",
         "url": "https://cohesifaccess.fr",
-        "interdit": "football sportif, construction, énergie solaire, alimentaire, digital web, négoce, leasing, automobile, nettoyage",
+        "interdit": "caméra, vidéosurveillance, contrôle d'accès badge, biométrie, sécurité électronique, alarme, football, construction, énergie solaire, alimentaire, digital web, négoce, leasing, automobile, nettoyage",
     },
     {
         "id": "net",

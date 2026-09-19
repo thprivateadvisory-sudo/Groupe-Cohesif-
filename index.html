@@ -1133,6 +1133,7 @@ footer {
     <a href="#equipe">Équipe</a>
     <a href="#news">Actualités</a>
     <a href="#partenaires">Partenaires</a>
+    <a href="#deal">Déposer un deal</a>
   </div>
   <div class="nav-right">
     <a href="#contact" class="nav-btn">Contact</a>
@@ -1148,6 +1149,7 @@ footer {
   <a href="#news" onclick="toggleMobile()">Actualités</a>
   <a href="#partenaires" onclick="toggleMobile()">Partenaires</a>
   <a href="#contact" onclick="toggleMobile()">Contact</a>
+  <a href="#deal" onclick="toggleMobile()">Déposer un deal</a>
 </div>
 
 <!-- HERO -->
@@ -1816,6 +1818,115 @@ footer {
         </ul>
         <a href="#contact" class="pack-cta">Choisir cette formule →</a>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEAL -->
+<style>
+.deal-layout { display:grid; grid-template-columns:5fr 7fr; gap:100px; align-items:start; }
+.deal-badge {
+  display:inline-flex; align-items:center; gap:10px;
+  background:var(--navy); color:var(--gold);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase;
+  padding:8px 18px; margin-bottom:28px;
+}
+.deal-badge::before { content:''; display:block; width:6px; height:6px; border-radius:50%; background:var(--gold); animation:pulse 1.8s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+.deal-commissions {
+  margin-top:40px;
+  display:grid; grid-template-columns:1fr 1fr; gap:2px;
+}
+.deal-commission {
+  padding:22px 24px;
+  background:var(--navy);
+  color:var(--white);
+}
+.deal-commission-n {
+  font-family:'Playfair Display',serif;
+  font-size:22px; font-weight:400; color:var(--gold);
+  margin-bottom:4px;
+}
+.deal-commission-l {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase;
+  color:rgba(255,255,255,.5);
+  margin-bottom:6px;
+}
+.deal-commission-sub {
+  font-size:13px; color:rgba(255,255,255,.65); font-weight:300;
+}
+@media(max-width:900px){
+  .deal-layout { grid-template-columns:1fr; gap:56px; }
+  .deal-commissions { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:520px){
+  .deal-commissions { grid-template-columns:1fr; }
+}
+</style>
+<section id="deal" class="s-pad" style="background:var(--off);border-top:1px solid var(--line);" aria-label="Déposer un deal immobilier Cohesif Access">
+  <div class="max">
+    <div class="deal-layout">
+      <div class="rv">
+        <div class="deal-badge">Cohesif Access · Off-Market</div>
+        <div class="s-eyebrow"><div class="s-eyebrow-line"></div><span>Déposer un Deal</span></div>
+        <h2 class="s-title">Clôturez votre deal<br><em>en 24&nbsp;h</em></h2>
+        <p class="s-sub">Apporteur, agent ou marchand de biens — soumettez votre opportunité immobilière. Notre réseau qualifié prend le relais immédiatement.</p>
+        <div class="deal-commissions">
+          <div class="deal-commission">
+            <div class="deal-commission-n">5 000 €</div>
+            <div class="deal-commission-l">Commission min.</div>
+            <div class="deal-commission-sub">Par deal finalisé</div>
+          </div>
+          <div class="deal-commission">
+            <div class="deal-commission-n">40 000 €</div>
+            <div class="deal-commission-l">Commission max.</div>
+            <div class="deal-commission-sub">Selon la valeur du bien</div>
+          </div>
+          <div class="deal-commission">
+            <div class="deal-commission-n">24 h</div>
+            <div class="deal-commission-l">Réponse garantie</div>
+            <div class="deal-commission-sub">Pour tout dossier qualifié</div>
+          </div>
+          <div class="deal-commission">
+            <div class="deal-commission-n">Off-market</div>
+            <div class="deal-commission-l">Accès exclusif</div>
+            <div class="deal-commission-sub">Réseau acheteurs qualifiés</div>
+          </div>
+        </div>
+      </div>
+      <form class="contact-form rv2" action="https://formspree.io/f/mzdnndna" method="POST">
+        <input type="hidden" name="_subject" value="Nouveau deal — Cohesif Access">
+        <input type="hidden" name="pole" value="Cohesif Access">
+        <div class="form-row">
+          <div class="fld"><label>Prénom *</label><input type="text" name="prenom" placeholder="Jean" required></div>
+          <div class="fld"><label>Nom *</label><input type="text" name="nom" placeholder="Dupont" required></div>
+        </div>
+        <div class="form-row">
+          <div class="fld"><label>Email *</label><input type="email" name="email" placeholder="jean@email.fr" required></div>
+          <div class="fld"><label>Téléphone</label><input type="tel" name="telephone" placeholder="06 00 00 00 00"></div>
+        </div>
+        <div class="form-row">
+          <div class="fld">
+            <label>Type de bien *</label>
+            <select name="type_bien" required>
+              <option value="">Sélectionner...</option>
+              <option>Appartement</option>
+              <option>Maison</option>
+              <option>Immeuble de rapport</option>
+              <option>Local commercial</option>
+              <option>Terrain</option>
+              <option>Bureau / Entrepôt</option>
+              <option>Autre</option>
+            </select>
+          </div>
+          <div class="fld"><label>Localisation *</label><input type="text" name="localisation" placeholder="Paris 15e, Île-de-France" required></div>
+        </div>
+        <div class="fld"><label>Prix estimé (€)</label><input type="text" name="prix_estime" placeholder="ex : 350 000 €"></div>
+        <div class="fld"><label>Description du deal *</label><textarea name="message" placeholder="Contexte vendeur, surface, état du bien, délai souhaité, conditions particulières..." required></textarea></div>
+        <button type="submit" class="form-submit" style="background:var(--gold);color:var(--navy);border-color:var(--gold);">Soumettre le deal →</button>
+      </form>
     </div>
   </div>
 </section>

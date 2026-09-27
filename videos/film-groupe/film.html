@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Groupe Cohesif — Film de présentation</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<style>
+  :root{
+    --navy:#0b1c3d; --navy2:#162d5a; --navy3:#1e3f7a;
+    --gold:#c9a84c; --gold2:#e8c96a; --paper:#f2f0ec; --off:#f8f7f5;
+    --slate:#8a97aa; --ink:#1a2535;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1920px;height:1080px;overflow:hidden;background:var(--navy)}
+  body{font-family:'Barlow',sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
+  #stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--navy)}
+  .scene{position:absolute;inset:0;overflow:hidden;visibility:hidden}
+  .abs{position:absolute}
+  .serif{font-family:'Playfair Display',serif}
+  .cond{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.32em}
+  .gold{color:var(--gold)}
+  .center{left:0;right:0;text-align:center}
+
+  /* grain + vignette shared overlay */
+  #vignette{position:absolute;inset:0;pointer-events:none;z-index:50;
+    background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,.35) 100%)}
+
+  /* ---------- intro ---------- */
+  #s-intro{background:radial-gradient(ellipse at 50% 40%,var(--navy2) 0%,var(--navy) 70%)}
+  #s-intro .kicker{top:300px;font-size:26px;color:var(--gold)}
+  #s-intro .line{top:360px;left:50%;height:2px;background:var(--gold);transform:translateX(-50%)}
+  #s-intro .words{top:410px;display:flex;justify-content:center;gap:48px;font-size:150px;font-weight:500;line-height:1.1}
+  #s-intro .words span{display:inline-block}
+  #s-intro .words .g{font-style:italic;color:var(--gold)}
+
+  /* ---------- logo reveal ---------- */
+  #s-logo{background:var(--paper)}
+  #s-logo img{left:50%;top:190px;width:760px;transform:translateX(-50%)}
+  #s-logo .tag{top:760px;font-size:34px;color:var(--navy);letter-spacing:.38em}
+  #s-logo .tag b{color:var(--gold);font-weight:600}
+
+  /* ---------- counter ---------- */
+  #s-count{background:linear-gradient(120deg,var(--navy) 0%,var(--navy2) 100%)}
+  #s-count .num{left:170px;top:150px;font-family:'Playfair Display',serif;font-size:540px;line-height:1;font-weight:700;color:var(--gold)}
+  #s-count .lab{left:860px;top:330px;width:900px}
+  #s-count .lab h2{font-family:'Playfair Display',serif;font-weight:500;font-size:92px;line-height:1.05}
+  #s-count .lab p{margin-top:36px;font-size:27px;color:var(--slate);letter-spacing:.24em;line-height:1.7}
+
+  /* ---------- poles ---------- */
+  .pole{background:var(--navy)}
+  .pole .photo{position:absolute;inset:-4%;background-size:cover;background-position:center}
+  .pole .shade{position:absolute;inset:0;
+    background:linear-gradient(90deg,rgba(11,28,61,.96) 0%,rgba(11,28,61,.86) 34%,rgba(11,28,61,.25) 68%,rgba(11,28,61,.05) 100%)}
+  .pole .shade2{position:absolute;inset:0;background:linear-gradient(0deg,rgba(11,28,61,.7) 0%,rgba(11,28,61,0) 30%)}
+  .pole .bignum{right:-40px;top:-120px;font-family:'Playfair Display',serif;font-weight:700;font-size:760px;line-height:1;
+    color:transparent;-webkit-text-stroke:2px rgba(201,168,76,.18)}
+  .pole .idx{left:150px;top:300px;font-size:26px;color:var(--gold)}
+  .pole .idx i{display:inline-block;width:70px;height:2px;background:var(--gold);vertical-align:middle;margin:0 22px 4px}
+  .pole .sector{left:150px;top:360px;font-size:24px;color:#cfd6e2;letter-spacing:.34em}
+  .pole .name{left:146px;top:410px;font-family:'Playfair Display',serif;font-weight:500;font-size:112px;line-height:1.05;white-space:nowrap}
+  .pole .name em{font-style:italic;color:var(--gold)}
+  .pole .desc{left:150px;top:590px;width:760px;font-size:34px;line-height:1.45;color:#e7ebf2}
+  .pole .url{left:150px;top:760px;font-size:22px;color:var(--gold);letter-spacing:.3em}
+  .pole .card{right:120px;bottom:110px;width:470px;height:170px;background:#fff;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;padding:28px 36px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+  .pole .card img{max-width:100%;max-height:100%;object-fit:contain}
+  .pole.nophoto{background:radial-gradient(ellipse at 75% 50%,var(--navy3) 0%,var(--navy2) 35%,var(--navy) 80%)}
+  .pole.nophoto .card{right:150px;bottom:auto;top:300px;width:500px;height:460px;padding:56px}
+  .pole .wipe{position:absolute;top:0;bottom:0;width:14px;background:var(--gold);z-index:5}
+
+  /* progress ticks */
+  #ticks{position:absolute;left:150px;bottom:70px;display:flex;gap:10px;z-index:40;visibility:hidden}
+  #ticks div{width:46px;height:3px;background:rgba(255,255,255,.22)}
+  #ticks div.on{background:var(--gold)}
+  #ticks div.done{background:rgba(201,168,76,.5)}
+  #brand{position:absolute;right:120px;top:70px;z-index:40;font-size:20px;color:rgba(255,255,255,.7);visibility:hidden}
+  #brand b{color:var(--gold);font-weight:600}
+
+  /* ---------- quote ---------- */
+  #s-quote{background:radial-gradient(ellipse at 30% 50%,var(--navy2) 0%,var(--navy) 75%)}
+  #s-quote .mark{left:200px;top:120px;font-family:'Playfair Display',serif;font-size:360px;line-height:1;color:var(--gold)}
+  #s-quote .txt{left:200px;top:330px;width:1500px;font-family:'Playfair Display',serif;font-style:italic;font-weight:500;font-size:88px;line-height:1.2}
+  #s-quote .txt em{color:var(--gold)}
+  #s-quote .who{left:200px;top:720px;display:flex;align-items:center;gap:30px}
+  #s-quote .who img{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid var(--gold)}
+  #s-quote .who .n{font-family:'Playfair Display',serif;font-size:40px}
+  #s-quote .who .r{font-size:22px;color:var(--gold);margin-top:8px}
+
+  /* ---------- values ---------- */
+  #s-values{background:var(--navy)}
+  #s-values .col{top:330px;width:560px;text-align:center}
+  #s-values .col .n{font-size:26px;color:var(--gold)}
+  #s-values .col .w{font-family:'Playfair Display',serif;font-size:104px;margin-top:22px}
+  #s-values .col .d{font-size:27px;color:var(--slate);margin-top:26px;line-height:1.5;padding:0 30px}
+  #s-values .sep{top:360px;width:1px;height:330px;background:rgba(201,168,76,.4)}
+
+  /* ---------- outro ---------- */
+  #s-outro{background:var(--paper)}
+  #s-outro img{left:50%;top:160px;width:640px;transform:translateX(-50%)}
+  #s-outro .motto{top:650px;font-family:'Playfair Display',serif;font-size:64px;color:var(--navy)}
+  #s-outro .motto em{color:var(--gold)}
+  #s-outro .line{top:760px;left:50%;height:2px;background:var(--gold);transform:translateX(-50%)}
+  #s-outro .site{top:800px;font-size:30px;color:var(--navy);letter-spacing:.4em}
+  #s-outro .loc{top:860px;font-size:22px;color:var(--slate);letter-spacing:.34em}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 1. Intro -->
+  <section class="scene" id="s-intro">
+    <div class="abs center cond kicker">Paris · France · Depuis 2024</div>
+    <div class="abs line"></div>
+    <div class="abs center words serif">
+      <span>Bâtir.</span><span>Connecter.</span><span class="g">Croître.</span>
+    </div>
+  </section>
+
+  <!-- 2. Logo -->
+  <section class="scene" id="s-logo">
+    <img class="abs" src="assets/logos/groupe.png" alt="">
+    <div class="abs center cond tag">Dix pôles d'expertise <b>·</b> Une seule vision</div>
+  </section>
+
+  <!-- 3. Counter -->
+  <section class="scene" id="s-count">
+    <div class="abs num">10</div>
+    <div class="abs lab">
+      <h2>pôles d'expertise complémentaires.</h2>
+      <p class="cond">Commerce · Immobilier · BTP · Automobile · Énergie<br>Agro · Négoce · Sport · Propreté · Financement</p>
+    </div>
+  </section>
+
+  <!-- 4. Poles (generated) -->
+  <div id="poles"></div>
+
+  <!-- 5. Quote -->
+  <section class="scene" id="s-quote">
+    <div class="abs mark">“</div>
+    <div class="abs txt">Nous bâtissons un groupe<br>qui <em>respire comme un seul.</em></div>
+    <div class="abs who">
+      <img src="assets/img/thomas-hoenig.jpg" alt="">
+      <div><div class="n">Thomas Hoenig</div><div class="r cond">Président &amp; Fondateur</div></div>
+    </div>
+  </section>
+
+  <!-- 6. Values -->
+  <section class="scene" id="s-values">
+    <div class="abs col" style="left:100px"><div class="n cond">01</div><div class="w">Cohésion</div><div class="d">Dix pôles alignés sur des objectifs communs.</div></div>
+    <div class="abs sep" style="left:680px"></div>
+    <div class="abs col" style="left:680px"><div class="n cond">02</div><div class="w">Exigence</div><div class="d">Une rigueur opérationnelle, du terrain à la direction.</div></div>
+    <div class="abs sep" style="left:1240px"></div>
+    <div class="abs col" style="left:1260px"><div class="n cond">03</div><div class="w">Durée</div><div class="d">Nous construisons pour durer, pas pour impressionner.</div></div>
+  </section>
+
+  <!-- 7. Outro -->
+  <section class="scene" id="s-outro">
+    <img class="abs" src="assets/logos/groupe.png" alt="">
+    <div class="abs center motto">Bâtir. Connecter. <em>Croître.</em></div>
+    <div class="abs line"></div>
+    <div class="abs center cond site">groupecohesif.fr</div>
+    <div class="abs center cond loc">Paris · Île-de-France</div>
+  </section>
+
+  <div id="ticks"></div>
+  <div id="brand" class="cond">Groupe <b>Cohesif</b></div>
+  <div id="vignette"></div>
+</div>
+
+<script>
+/* ---------- data ---------- */
+const POLES = [
+  {k:'commerce', name:'Cohesif <em>Commerce</em>', sector:'Commerce · Distribution', desc:'Négoce, distribution et e-commerce, pour les professionnels comme pour les particuliers.', url:'cohesifcommerce.fr'},
+  {k:'access',   name:'Cohesif <em>Access</em>',   sector:'Immobilier · Apport d’affaires', desc:'Un réseau privé d’apporteurs d’affaires. L’accès au marché réel de l’immobilier.', url:'cohesifaccess.fr'},
+  {k:'btp',      name:'Cohesif <em>BTP</em>',      sector:'Construction · Travaux', photo:'btp', desc:'Du gros œuvre à la rénovation intérieure. Construire, piloter, livrer.', url:'cohesifbtp.fr'},
+  {k:'auto',     name:'Cohesif <em>Auto</em>',     sector:'Automobile · Mobilité', photo:'auto', pos:'50% 60%', desc:'Vente, import, flottes professionnelles et véhicules d’exception.', url:'cohesifauto.fr'},
+  {k:'energy',   name:'Cohesif <em>Energy</em>',   sector:'Énergie · Transition', photo:'energy', pos:'50% 70%', desc:'Bornes de recharge, solaire, pompes à chaleur et audits énergétiques.', url:'cohesifenergy.fr'},
+  {k:'agro',     name:'Cohesif <em>Agro</em>',     sector:'Agroalimentaire · Sourcing', photo:'agro', desc:'Équipements industriels et packaging alimentaire, en sourcing international.', url:'cohesifagro.fr'},
+  {k:'negoce',   name:'Cohesif <em>Négoce</em>',   sector:'Négoce · Matériaux', desc:'La matière première des professionnels : bois, métaux, isolants. Réponse sous 24 h.', url:'cohesifnegoce.fr'},
+  {k:'sport',    name:'Cohesif <em>Sport</em>',    sector:'Sport · Football', desc:'La gestion complète de clubs de football, partout en France.', url:'cohesifsport.fr'},
+  {k:'net',      name:'Cohesif <em>Net</em>',      sector:'Propreté · Entretien', photo:'net', pos:'50% 40%', desc:'Nettoyage professionnel premium, en Île-de-France et en Lorraine.', url:'cohesifnet.fr'},
+  {k:'leasing',  name:'Cohesif <em>Leasing</em>',  sector:'Financement · Équipements', photo:'leasing', pos:'50% 35%', desc:'Vos équipements financés en leasing, loyers intégralement déductibles.', url:'cohesifleasing.fr'},
+];
+
+/* ---------- timeline (seconds) ---------- */
+const T = {
+  intro:[0,7.2], logo:[6.8,12.2], count:[11.8,16.4],
+  poleStart:16.0, poleDur:3.5, poleOverlap:0.55,
+  quote:null, values:null, outro:null, end:null
+};
+T.polesEnd = T.poleStart + POLES.length*T.poleDur;
+T.quote  = [T.polesEnd-0.3, T.polesEnd+5.2];
+T.values = [T.quote[1]-0.4, T.quote[1]+4.0];
+T.outro  = [T.values[1]-0.4, T.values[1]+6.0];
+T.end = T.outro[1];
+window.DURATION = T.end;
+
+/* ---------- build poles ---------- */
+const polesEl = document.getElementById('poles');
+POLES.forEach((p,i)=>{
+  const n = String(i+1).padStart(2,'0');
+  const s = document.createElement('section');
+  s.className = 'scene pole' + (p.photo?'':' nophoto');
+  s.id = 'p-'+p.k;
+  s.innerHTML = `
+    ${p.photo?`<div class="photo" style="background-image:url(assets/img/${p.photo}.jpg);background-position:${p.pos||'center'}"></div><div class="shade"></div><div class="shade2"></div>`:`<div class="abs bignum">${n}</div>`}
+    <div class="abs cond idx">${n}<i></i>10</div>
+    <div class="abs cond sector">${p.sector}</div>
+    <div class="abs name">${p.name}</div>
+    <div class="abs desc">${p.desc}</div>
+    <div class="abs cond url">${p.url}</div>
+    <div class="abs card"><img src="assets/logos/${p.k}.png" alt=""></div>
+    <div class="wipe"></div>`;
+  polesEl.appendChild(s);
+});
+const ticks = document.getElementById('ticks');
+POLES.forEach(()=>ticks.appendChild(document.createElement('div')));
+
+/* ---------- helpers ---------- */
+const $ = (q,r=document)=>r.querySelector(q);
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const lerp=(a,b,p)=>a+(b-a)*p;
+const E = {
+  out3:p=>1-Math.pow(1-p,3),
+  out5:p=>1-Math.pow(1-p,5),
+  inOut3:p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2,
+  in3:p=>p*p*p,
+};
+function prog(t,t0,dur,ease=E.out3){return ease(clamp((t-t0)/dur));}
+// fade-up entrance + optional exit
+function rise(el,t,t0,dur=0.8,dist=40,exit=null){
+  let p=prog(t,t0,dur,E.out5), o=p, y=lerp(dist,0,p);
+  if(exit){const q=prog(t,exit[0],exit[1],E.in3); o*=1-q; y-=q*dist*0.6;}
+  el.style.opacity=o; el.style.transform=`translateY(${y}px)`;
+}
+function show(el,t,[a,b]){el.style.visibility=(t>=a&&t<b)?'visible':'hidden'; return t>=a&&t<b;}
+
+/* ---------- seek: pure function of time ---------- */
+window.seek = function(t){
+  /* intro */
+  const si=$('#s-intro');
+  if(show(si,t,T.intro)){
+    const ex=[5.9,0.7];
+    rise($('.kicker',si),t,0.5,0.9,20,ex);
+    const ln=$('.line',si); ln.style.width=lerp(0,420,prog(t,0.2,1.2,E.inOut3))*(1-prog(t,ex[0],ex[1],E.in3))+'px';
+    [...si.querySelectorAll('.words span')].forEach((w,i)=>{
+      const p=prog(t,1.5+i*0.75,1.0,E.out5), q=prog(t,ex[0]+i*0.08,ex[1],E.in3);
+      w.style.opacity=p*(1-q);
+      w.style.transform=`translateY(${lerp(70,0,p)-q*30}px)`;
+      w.style.filter=`blur(${lerp(14,0,p)}px)`;
+    });
+  }
+  /* logo reveal (paper wipe up) */
+  const sl=$('#s-logo');
+  if(show(sl,t,T.logo)){
+    const p=prog(t,T.logo[0],0.8,E.inOut3);
+    const out=prog(t,T.logo[1]-0.6,0.6,E.inOut3);
+    sl.style.clipPath=`inset(${lerp(100,0,p)}% 0 ${out*100}% 0)`;
+    const img=$('img',sl), pi=prog(t,T.logo[0]+0.4,1.6,E.out3);
+    img.style.opacity=pi; img.style.transform=`translateX(-50%) scale(${lerp(0.9,1,pi)+ (t-T.logo[0])*0.006})`;
+    rise($('.tag',sl),t,T.logo[0]+1.4,1.0,24);
+  }
+  /* counter */
+  const sc=$('#s-count');
+  if(show(sc,t,T.count)){
+    const p=prog(t,T.count[0]+0.3,1.8,E.out3);
+    $('.num',sc).textContent=Math.round(lerp(0,10,p));
+    $('.num',sc).style.opacity=prog(t,T.count[0]+0.3,0.5);
+    rise($('.lab h2',sc),t,T.count[0]+0.7,0.9,36);
+    rise($('.lab p',sc),t,T.count[0]+1.3,0.9,24);
+  }
+  /* poles */
+  let active=-1;
+  POLES.forEach((pl,i)=>{
+    const s=document.getElementById('p-'+pl.k);
+    const a=T.poleStart+i*T.poleDur, b=a+T.poleDur+T.poleOverlap;
+    s.style.zIndex=10+i;
+    if(!show(s,t,[a,b])) return;
+    if(t>=a+0.3) active=i;
+    // horizontal wipe in from the right, gold bar leading
+    const w=prog(t,a,0.75,E.inOut3);
+    s.style.clipPath=`inset(0 0 0 ${lerp(100,0,w)}%)`;
+    const bar=$('.wipe',s); bar.style.left=`calc(${lerp(100,0,w)}% - 7px)`; bar.style.opacity=w<1?1:0;
+    const lt=t-a;
+    const ph=$('.photo',s);
+    if(ph){ ph.style.transform=`scale(${1.14-0.1*clamp(lt/(T.poleDur+0.6))}) translateX(${lerp(-20,20,clamp(lt/4))}px)`; }
+    const bn=$('.bignum',s); if(bn){bn.style.transform=`translateX(${lerp(80,0,prog(t,a,2.5,E.out3))}px)`; bn.style.opacity=prog(t,a+0.2,1);}
+    rise($('.idx',s),t,a+0.35,0.7,20);
+    rise($('.sector',s),t,a+0.45,0.7,20);
+    rise($('.name',s),t,a+0.55,0.9,50);
+    rise($('.desc',s),t,a+0.8,0.9,30);
+    rise($('.url',s),t,a+1.0,0.8,20);
+    const c=$('.card',s), pc=prog(t,a+0.7,0.9,E.out5);
+    c.style.opacity=pc; c.style.transform=`translateY(${lerp(60,0,pc)}px)`;
+  });
+  const inPoles=t>=T.poleStart+0.3&&t<T.polesEnd;
+  ticks.style.visibility=inPoles?'visible':'hidden';
+  $('#brand').style.visibility=inPoles?'visible':'hidden';
+  [...ticks.children].forEach((d,i)=>d.className=i===active?'on':(i<active?'done':''));
+  /* quote */
+  const sq=$('#s-quote');
+  if(show(sq,t,T.quote)){
+    sq.style.zIndex=30;
+    const a=T.quote[0];
+    sq.style.opacity=prog(t,a,0.6);
+    rise($('.mark',sq),t,a+0.2,1.0,-40);
+    rise($('.txt',sq),t,a+0.5,1.2,50);
+    rise($('.who',sq),t,a+1.4,1.0,30);
+  }
+  /* values */
+  const sv=$('#s-values');
+  if(show(sv,t,T.values)){
+    sv.style.zIndex=31;
+    const a=T.values[0];
+    sv.style.opacity=prog(t,a,0.5);
+    [...sv.querySelectorAll('.col')].forEach((c,i)=>rise(c,t,a+0.3+i*0.35,0.9,50));
+    [...sv.querySelectorAll('.sep')].forEach((c,i)=>{c.style.transform=`scaleY(${prog(t,a+0.5+i*0.3,0.8,E.inOut3)})`;});
+  }
+  /* outro */
+  const so=$('#s-outro');
+  if(show(so,t,T.outro)){
+    so.style.zIndex=32;
+    const a=T.outro[0];
+    const p=prog(t,a,0.9,E.inOut3);
+    so.style.clipPath=`circle(${lerp(0,120,p)}% at 50% 50%)`;
+    const img=$('img',so), pi=prog(t,a+0.4,1.4,E.out3);
+    img.style.opacity=pi; img.style.transform=`translateX(-50%) scale(${lerp(0.92,1,pi)})`;
+    rise($('.motto',so),t,a+1.1,1.0,30);
+    $('.line',so).style.width=lerp(0,300,prog(t,a+1.6,1.0,E.inOut3))+'px';
+    rise($('.site',so),t,a+1.9,0.9,20);
+    rise($('.loc',so),t,a+2.2,0.9,20);
+    // final fade to black
+    so.style.filter=`brightness(${1-prog(t,T.end-0.8,0.8,E.in3)})`;
+  }
+};
+window.seek(0);
+</script>
+</body>
+</html>

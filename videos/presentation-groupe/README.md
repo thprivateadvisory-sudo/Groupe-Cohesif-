@@ -1,6 +1,8 @@
 # Vidéo de présentation — Groupe Cohesif
 
-`groupe-cohesif-presentation.mp4` : 38 s, 1080×1920 (9:16), 60 i/s, son AAC −14 LUFS.
+`groupe-cohesif-presentation-sans-nom.mp4` : version sans nom ni photo — la citation est signée « Le Président ».
+`groupe-cohesif-presentation.mp4` : version avec la photo et le nom de Thomas Hoenig.
+Les deux : 38 s, 1080×1920 (9:16), 60 i/s, son AAC −14 LUFS.
 Format prévu pour TikTok, Reels Instagram, Facebook, LinkedIn et YouTube Shorts.
 
 ## Déroulé
@@ -10,11 +12,11 @@ Format prévu pour TikTok, Reels Instagram, Facebook, LinkedIn et YouTube Shorts
 | 4–8 s | Révélation du logo doré — Bâtir. Connecter. Croître. |
 | 8–23 s | Les 10 pôles en slides (clic + transition à chaque pôle) |
 | 23–28 s | Grille des 10 pôles reliés — « 10 pôles. Une seule vision. » |
-| 28–32 s | Citation de Thomas Hoenig — « On construit pour que ça dure. » |
+| 28–32 s | Citation du président — « On construit pour que ça dure. » |
 | 32–38 s | Écran final : groupecohesif.fr + « Suis l'aventure » |
 
 ## Régénérer
-Sources dans `source/` : `index.html` (animation image par image), `audio.py` (bande-son et bruitages
+Sources dans `source/` (elles produisent la version sans nom) : `index.html` (animation image par image), `audio.py` (bande-son et bruitages
 synthétisés, sans droits tiers), `render.js` (capture Playwright à 120 i/s fusionnée en 60 i/s pour le flou de mouvement).
 
 ```bash

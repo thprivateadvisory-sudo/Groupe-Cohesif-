@@ -1,6 +1,7 @@
 # Vidéo de présentation — Groupe Cohesif
 
 `groupe-cohesif-presentation-sans-nom.mp4` : version sans nom ni photo — la citation est signée « Le Président ».
+`groupe-cohesif-presentation-carre.mp4` : version sans nom en carré 1080×1080, pour le fil Facebook et Instagram.
 `groupe-cohesif-presentation.mp4` : version avec la photo et le nom de Thomas Hoenig.
 Les deux : 38 s, 1080×1920 (9:16), 60 i/s, son AAC −14 LUFS.
 Format prévu pour TikTok, Reels Instagram, Facebook, LinkedIn et YouTube Shorts.
@@ -22,7 +23,8 @@ synthétisés, sans droits tiers), `render.js` (capture Playwright à 120 i/s fu
 ```bash
 cd source
 python3 audio.py                                   # -> music.wav
-node render.js video raw.mp4 60 0 38 2             # -> vidéo sans son
+node render.js video raw.mp4 60 0 38 2             # -> vidéo sans son (9:16)
+SQ=1 node render.js video raw-carre.mp4 60 0 38 2  # -> version carrée 1:1
 ffmpeg -i raw.mp4 -i music.wav -filter_complex "[0:v]noise=c0s=5:c0f=t+u,eq=contrast=1.04:saturation=1.06,format=yuv420p[v];[1:a]acompressor=threshold=-18dB:ratio=2.5:attack=15:release=200:makeup=2,loudnorm=I=-14:TP=-1.2:LRA=9[a]" \
   -map "[v]" -map "[a]" -c:v libx264 -preset slow -crf 17 -maxrate 14M -bufsize 28M -r 60 -c:a aac -b:a 256k -movflags +faststart groupe-cohesif-presentation.mp4
 ```

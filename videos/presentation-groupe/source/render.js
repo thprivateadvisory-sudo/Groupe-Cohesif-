@@ -7,10 +7,10 @@ const path = require('path');
 (async () => {
   const [mode, out, a, b, c, d] = process.argv.slice(2);
   const browser = await chromium.launch({ args: ['--disable-web-security', '--allow-file-access-from-files', '--force-color-profile=srgb', '--disable-gpu-vsync'] });
-  const page = await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
+  const page = await browser.newPage({ viewport: { width: 1080, height: process.env.SQ ? 1080 : 1920 }, deviceScaleFactor: 1 });
   page.on('console', m => console.log('[page]', m.text()));
   page.on('pageerror', e => console.log('[err]', e.message));
-  await page.goto('file://' + path.resolve(__dirname, 'index.html'));
+  await page.goto('file://' + path.resolve(__dirname, 'index.html') + (process.env.SQ ? '?sq=1' : ''));
   await page.waitForFunction(() => window.READY === true, null, { timeout: 60000 });
   await page.evaluate(() => Promise.all([...document.images].map(i => i.complete ? 1 : new Promise(r => { i.onload = i.onerror = r }))));
   await page.evaluate(() => Promise.all([...document.images].map(i => i.decode().catch(() => 0))));

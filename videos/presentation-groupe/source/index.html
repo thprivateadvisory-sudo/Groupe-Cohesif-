@@ -87,6 +87,11 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#000}
 #vig{background:radial-gradient(ellipse 85% 70% at 50% 48%,rgba(0,0,0,0) 55%,rgba(0,0,0,.72) 100%)}
 .bar{left:0;width:1080px;height:200px;background:#000}
 #black{background:#000}
+
+html.sq,html.sq body{height:1080px}
+html.sq #stage{height:1080px}
+html.sq #bg{top:-420px}
+html.sq #leak,html.sq #vig,html.sq #flash,html.sq #black{height:1080px}
 </style></head>
 <body>
 <div id="stage">
@@ -97,6 +102,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#000}
     <div id="bokeh" class="full"></div>
   </div>
 
+  <div id="sq" class="full" style="transform-origin:0 0">
   <div id="cam" class="full" style="perspective:1800px;transform-origin:540px 860px">
 
     <!-- SCENE 1 : hook -->
@@ -166,6 +172,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#000}
     <!-- shared logo -->
     <div id="logo" class="abs goldlogo" style="left:0;top:0;width:700px;height:472px;transform-origin:50% 50%"></div>
   </div>
+  </div>
 
   <!-- FX -->
   <div id="leak" class="full"></div>
@@ -198,6 +205,11 @@ function vis(el,on){el.style.display=on?'block':'none'}
 // deterministic rng
 let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
 
+const SQ=location.search.includes('sq');
+if(SQ)document.documentElement.classList.add('sq');
+// square framing: [time, content centre y, scale]
+const SQK=[[0,890,.9],[3.95,890,.9],[4.0,990,.9],[7.25,990,.9],[8.0,832,.76],[22.95,832,.76],[23.0,905,.75],[27.95,905,.75],[28.0,880,1.0],[31.95,880,1.0],[32.0,960,.8],[99,960,.8]];
+function sqView(t){for(let i=0;i<SQK.length-1;i++){const a=SQK[i],b=SQK[i+1];if(t>=a[0]&&t<=b[0]){const p=E.ioc((t-a[0])/(b[0]-a[0]));return[lerp(a[1],b[1],p),lerp(a[2],b[2],p)]}}return[960,.8]}
 const BEAT=0.5;
 const POLES=[
  {k:'commerce',s:'Commerce · Distribution',p:'Négoce & distribution<br><em>B2B · B2C</em>',h:340},
@@ -319,6 +331,7 @@ function R(t){
   const [sx,sy,sr]=shake(t);
   let camS=1;
   const ca=caAmt(t)*9;
+  if(SQ){const v=sqView(t);$('sq').style.transform=`translate(${540-540*v[1]}px,${540-v[0]*v[1]}px) scale(${v[1]})`;}
   S($('cam'),{transform:`translate(${sx}px,${sy}px) rotate(${sr}deg) scale(${camS})`,
     filter:ca>.3?`drop-shadow(${ca}px 0 0 rgba(255,40,80,.55)) drop-shadow(${-ca}px 0 0 rgba(40,200,255,.55))`:'none'});
 
@@ -522,10 +535,11 @@ function fx(t){
   // flare
   let fo=0,fx_=0,fy=0;
   for(const f of FLARES){const dt=t-f[0];if(dt>=-.05&&dt<.8){const p=cl((dt+.05)/.85);fo=Math.sin(p*Math.PI);fx_=lerp(-900,900,E.ioc(p));fy=f[1];}}
+  if(SQ){const v=sqView(t);fy=(fy-v[0])*v[1]+540;}
   S($('flare'),{opacity:fo,transform:`translate(${fx_-360}px,${fy}px) scaleY(${.6+fo*.6})`});
   S($('flareglow'),{opacity:fo*.9,transform:`translate(${540+fx_*.35-350}px,${fy-350}px) scale(${.5+fo*.7})`});
   // letterbox
-  const bar=(1-P(t,3.8,4.25,'ioc'))*170 + P(t,TEND-1.2,TEND-.3,'ioc')*260;
+  const bar=((1-P(t,3.8,4.25,'ioc'))*170 + P(t,TEND-1.2,TEND-.3,'ioc')*260)*(SQ?.55:1);
   S($('barT'),{height:bar+'px'});S($('barB'),{height:bar+'px'});
   // black in/out
   S($('black'),{opacity:Math.max(1-P(t,0,.12),P(t,TEND-.45,TEND-.05))});

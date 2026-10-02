@@ -1,0 +1,5 @@
+renders/_*
+renders/*.parts/
+renders/cues.json
+renders/audio_master.wav
+previews/

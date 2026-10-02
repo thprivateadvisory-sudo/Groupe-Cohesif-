@@ -51,11 +51,17 @@ CH = {  # bass, pad voicing
 PROG = ['Dm', 'Bb', 'F', 'C']
 NBARS = int(np.ceil(DUR / BAR))
 def chord(b):
-    over = {48: 'C', 49: 'Dm', 50: 'C', 51: 'Bb', 52: 'C', 53: 'F', 54: 'F'}
+    over = {56: 'C', 57: 'Dm', 58: 'C', 59: 'Bb', 60: 'C', 61: 'F', 62: 'F'}
     return over.get(b, PROG[b % 4])
 
 # section helpers (seconds)
-def sec(t, a, b): return a <= t < b
+# Le film v2 ajoute 2 pôles (+7,2 s à partir de 50 s) et la scène contact (+12 s à partir de 115,2 s).
+# Les repères ci-dessous restent écrits dans la grille d'origine et sont convertis par M() / Me().
+def M(x): return x if x < 50 else (x + 7.2 if x < 115.2 else x + 19.2)        # début de section
+def Me(x): return x if x <= 50 else (x + 7.2 if x <= 115.2 else x + 19.2)     # fin de section
+CONTACT = (122.4, 134.4)
+def sec(t, a, b): return M(a) <= t < Me(b)
+def in_contact(t): return CONTACT[0] <= t < CONTACT[1]
 
 # ------------------------------------------------------------------ instruments
 def saw_add(f, d, maxh=14, bright=1.0):
@@ -147,6 +153,7 @@ def reverse_swell(m_list, d=2.0, amp=1.0):
 def level(t):
     """global music intensity envelope"""
     pts = [(0, .55), (12, .65), (19.2, .7), (33.6, .8), (52.8, .9), (86.4, .85), (96, 1.0), (98.4, 1.0), (105.6, .7), (115.2, .9), (117.6, 1.0), (122.4, .85), (130, .6)]
+    pts = [(M(x), y) for x, y in pts if x < 115.2] + [(122.4, .72), (133.0, .8)] + [(M(x), y) for x, y in pts if x >= 115.2]
     xs, ys = zip(*pts); return np.interp(t, xs, ys)
 
 MELODY = {'Dm': [(0, 69), (2, 74)], 'Bb': [(0, 77), (2.5, 74)], 'F': [(0, 72), (2, 69)], 'C': [(0, 67), (2, 76)]}
@@ -156,8 +163,8 @@ for b in range(NBARS):
     if t0 >= DUR - 0.5: break
     name = chord(b); bm, voic = CH[name]
     L = level(t0)
-    calm = sec(t0, 0, 12) or sec(t0, 105.6, 115.2) or t0 >= 122.4
-    final = b >= 53
+    calm = sec(t0, 0, 12) or sec(t0, 105.6, 115.2) or t0 >= M(122.4)
+    final = b >= 61
     padlen = (BAR + 1.6) if not final else (DUR - t0)
     bright = 0.6 if sec(t0, 0, 12) else (0.8 if calm else 1.2)
     # pad
@@ -184,7 +191,7 @@ for b in range(NBARS):
         for m in (65, 69, 72, 77):
             put(music, t0 + .02 * (m - 65), piano(m, d=5, amp=.8, decay=.5), pan=.1, send=verb_send, sendgain=1.0)
     # arpeggio 8ths
-    if sec(t0, 19.2, 86.4) or sec(t0, 88.8, 98.4) or sec(t0, 98.4, 105.6) or sec(t0, 117.6, 122.4):
+    if sec(t0, 19.2, 86.4) or sec(t0, 88.8, 98.4) or sec(t0, 98.4, 105.6) or sec(t0, 117.6, 122.4) or in_contact(t0):
         pat = [0, 1, 2, 3, 2, 1, 2, 3]
         for k in range(8):
             m = voic[pat[k]] + 12
@@ -197,7 +204,7 @@ for b in range(NBARS):
         put(music, t0, kick(.45)); put(music, t0 + 1.2, kick(.35))
     # drums
     groove = sec(t0, 52.8, 86.4) or sec(t0, 98.4, 105.6) or sec(t0, 117.6, 122.4)
-    light = sec(t0, 33.6, 52.8)
+    light = sec(t0, 33.6, 52.8) or in_contact(t0)
     if groove or light or sec(t0, 88.8, 96):
         for bt in range(4):
             tb = t0 + bt * BEAT
@@ -212,27 +219,27 @@ for b in range(NBARS):
             put(music, t0 + 2 * BEAT + .3, hat(.6, open_=True), pan=-.3)
 
 # toms on questions
-for i in range(6): put(music, 88.8 + 1.2 * i, tom(.9, 98), send=verb_send, sendgain=.4)
-put(music, 86.4, tom(.8, 80), send=verb_send, sendgain=.6)
+for i in range(6): put(music, M(88.8 + 1.2 * i), tom(.9, 98), send=verb_send, sendgain=.4)
+put(music, M(86.4), tom(.8, 80), send=verb_send, sendgain=.6)
 # snare rolls into the drops
 def roll(a, b, amp=.7):
     n = int((b - a) / (BEAT / 4))
     for k in range(n):
         put(music, a + k * BEAT / 4, clap(amp * (0.3 + 0.7 * k / n)), send=verb_send, sendgain=.25)
-roll(96.6, 98.0); roll(116.4, 117.5, .6)
+roll(M(96.6), M(98.0)); roll(M(116.4), M(117.5), .6)
 # final questions hits
-for a in (115.2, 115.8, 116.4, 117.0):
+for a in map(M, (115.2, 115.8, 116.4, 117.0)):
     put(music, a, kick(1.0)); put(music, a, tom(.7, 90), send=verb_send, sendgain=.4)
 # risers
-for (a, b) in ((50.4, 52.8), (95.4, 98.2), (115.2, 117.55)):
+for (a, b) in ((57.6, 60.0), (M(95.4), M(98.2)), (M(115.2), M(117.55))):
     put(music, a, riser(b - a), send=verb_send, sendgain=.5)
 # short silence before the ecosystem drop (duck)
 duck = np.ones(N)
-for (a, b) in ((98.1, 98.4),):
+for (a, b) in ((M(98.1), M(98.4)),):
     i0, i1 = S(a), S(b); duck[i0:i1] = np.linspace(1, .15, i1 - i0)
 # reverse swells into logo moments
 put(music, 2.4 - 2.0, reverse_swell([62, 69, 74], 2.0, .8), send=verb_send, sendgain=.6)
-put(music, 117.6 - 1.6, reverse_swell([62, 69, 74, 77], 1.6, .7), send=verb_send, sendgain=.6)
+put(music, M(117.6) - 1.6, reverse_swell([62, 69, 74, 77], 1.6, .7), send=verb_send, sendgain=.6)
 
 # ------------------------------------------------------------------ sound design
 def click_s():

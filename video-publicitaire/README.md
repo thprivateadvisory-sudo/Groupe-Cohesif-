@@ -1,6 +1,6 @@
 # Groupe Cohesif — Film publicitaire corporate
 
-Film de 2 min 10 s, sans voix off, réalisé entièrement en code (motion design HTML/CSS/JS rendu image par image, musique et sound design synthétisés). Aucun générateur vidéo IA, aucune banque de sons externe.
+Film de 2 min 29 s, sans voix off, réalisé entièrement en code (motion design HTML/CSS/JS rendu image par image, musique et sound design synthétisés). Aucun générateur vidéo IA, aucune banque de sons externe.
 
 ## Fichiers livrés (`renders/`)
 
@@ -18,20 +18,22 @@ Chaque format a sa propre mise en page (navigation des pôles, boutique, étapes
 |---|---|
 | 0:00 | Introduction : logo, « Un groupe. / Plusieurs expertises. / Des solutions pour vos projets. » |
 | 0:12 | Qui sommes-nous : Construire · Approvisionner · Équiper · Transporter · Accompagner |
-| 0:19 | Écosystème interactif : navigation dans les 8 pôles (BTP, Négoce, Energy, Auto, Commerce, Access, Agro, Sport) |
-| 0:53 | Boutique en ligne, en 8 étapes : arrivée, catégorie, produit, fiche, panier, commande, confirmation |
-| 1:17 | Comment ça se passe : choisir → commander → préparer → expédier → recevoir |
-| 1:26 | Plus qu'une boutique : projet, chantier, approvisionnement, matériel, énergie, transport |
-| 1:38 | Plusieurs activités. Un seul groupe. |
-| 1:46 | Confiance : identifier le besoin, orienter vers la solution adaptée |
-| 1:55 | Final : Un besoin ? Un projet ? Un chantier ? Une commande ? → www.groupecohesif.fr · contact@groupecohesif.fr |
+| 0:19 | Écosystème interactif : navigation dans les 10 pôles (BTP, Négoce, Energy, Auto, Commerce, Access, Agro, Sport, Net, Leasing) |
+| 1:00 | Boutique en ligne, en 8 étapes : arrivée, catégorie, produit, fiche, panier, commande, confirmation |
+| 1:24 | Comment ça se passe : choisir → commander → préparer → expédier → recevoir |
+| 1:34 | Plus qu'une boutique : projet, chantier, approvisionnement, matériel, énergie, transport |
+| 1:46 | Plusieurs activités. Un seul groupe. À votre écoute. |
+| 1:53 | Confiance : identifier le besoin, orienter vers la solution adaptée |
+| 2:02 | Nous contacter : chat en ligne des sites, demande de rappel par un agent, WhatsApp 07 56 85 57 27, e-mail |
+| 2:14 | Final : Un besoin ? Un projet ? Un chantier ? Une commande ? → www.groupecohesif.fr · WhatsApp · contact@groupecohesif.fr |
 
 ## Sources des contenus
 
 Toutes les informations affichées viennent des sites du groupe (dépôts `Groupe-Cohesif-`, `cohesif-energy`, `Cohesif-commerce`, etc.) :
 - descriptions des pôles : section « Nos pôles » de groupecohesif.fr ;
 - boutique : catalogue réel `cohesif-energy/data/boutique.json` (noms, prix TTC, « Livraison offerte en France métropolitaine », « Expédiée sous 7 à 12 jours ouvrés », « Garantie 2 ans ») et parcours réel `cohesifcommerce.fr/commande` (Récapitulatif → Livraison et paiement → Confirmation) ;
-- photos et logos : ceux publiés sur les sites des pôles.
+- chat en ligne et rappel : assistant des sites (Cohesif Energy, Commerce, Auto, Sport), parcours « Parler à un agent » → numéro de téléphone → « Demande enregistrée » ;
+- photos et logos : ceux publiés sur les sites des pôles, affichés sans agrandissement au-delà de leur résolution d'origine.
 
 Aucun nom de personne, SIREN/SIRET, chiffre, avis, partenaire ou certification n'apparaît dans le film.
 

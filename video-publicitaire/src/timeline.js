@@ -43,7 +43,8 @@ const LOGO = k => `assets/logos/${k}.png`;
 const bgi = k => `url(${IMG(k)})`;
 
 const CUES = [];
-const cue = (t, type, v = 1) => CUES.push({ t: +t.toFixed(3), type, v });
+let OFF = 0;   // décalage appliqué aux scènes définies après l'ajout de pôles / de la scène contact
+const cue = (t, type, v = 1) => CUES.push({ t: +(t + OFF).toFixed(3), type, v });
 
 /* text reveal through a mask */
 function RV(parent, cls, html) {
@@ -78,7 +79,15 @@ function fu(el, t, a, b, o = {}) {
   return op;
 }
 const scenes = [];
-function scene(a, b, upd) { const root = h('div', 'scene'); const s = { a, b, root, upd }; scenes.push(s); return s; }
+function scene(a, b, upd) { const root = h('div', 'scene'); const off = OFF; const s = { a: a + off, b: b + off, root, upd: t => upd(t - off) }; scenes.push(s); return s; }
+
+/* carte photo centrée : les photos restent à leur résolution native (pas d'agrandissement flou) */
+const CARD = pick([410, 190, 1100, 640], [60, 640, 960, 640], [60, 190, 960, 600]);
+function photoCard(parent, R2 = CARD) {
+  const c = h('div', 'pcard', null, parent);
+  css(c, { left: R2[0] + 'px', top: R2[1] + 'px', width: R2[2] + 'px', height: R2[3] + 'px' });
+  return c;
+}
 
 /* ---------- icons ---------- */
 const ICON = {
@@ -90,6 +99,11 @@ const ICON = {
   pointer: '<path d="M6 3.5l12.5 7.2-5.6 1.6-2.4 5.7z"/><path d="M13 12.4l4.6 6.1"/>',
   box: '<path d="M3.5 7.5L12 3.6l8.5 3.9v9L12 20.4l-8.5-3.9z"/><path d="M3.5 7.5L12 11.4l8.5-3.9M12 11.4v9"/>',
   home: '<path d="M3.5 11L12 4l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.2 14.6l2 2 3.8-3.9"/>',
+  chat: '<path d="M4 5.5h16v10H9l-4.5 3.5V15.5H4z"/><path d="M8 9.5h8M8 12.5h5"/>',
+  phone: '<path d="M6.5 3.5l3 .5 1.2 4-2 1.5a12 12 0 0 0 5.8 5.8l1.5-2 4 1.2.5 3c-.2 1-1 1.5-2 1.5C10.5 19 5 13.5 5 5.5c0-1 .5-1.8 1.5-2z"/>',
+  wa: '<path d="M12 3.5a8.5 8.5 0 0 0-7.4 12.7L3.5 20.5l4.4-1.1A8.5 8.5 0 1 0 12 3.5z"/><path d="M9.2 8.3c.3-.4.7-.4 1-.1l.8 1.6c.1.3 0 .6-.2.8l-.5.5a6 6 0 0 0 2.6 2.6l.5-.5c.2-.2.5-.3.8-.2l1.6.8c.3.2.3.7-.1 1-.6.6-1.5.9-2.3.6a8 8 0 0 1-4.8-4.8c-.3-.8 0-1.7.6-2.3z"/>',
+  mail: '<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7l8 6 8-6"/>',
+  send: '<path d="M4 12l16-7-6 16-3-6.5z"/><path d="M11 14.5L20 5"/>',
   x: '<path d="M6 6l12 12M18 6L6 18"/>',
   arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
 };
@@ -119,9 +133,9 @@ function bgUpdate(t, frame) {
 /* ---------- cursor ---------- */
 const cursorEl = document.getElementById('cursor'), rippleEl = document.getElementById('ripple');
 const CUR = { moves: [], clicks: [], wins: [] };
-function curMove(t0, t1, target, from) { CUR.moves.push({ t0, t1, target, from }); }
-function curClick(tc, snd = 'click') { CUR.clicks.push(tc); cue(tc, snd); }
-function curShow(a, b) { CUR.wins.push([a, b]); }
+function curMove(t0, t1, target, from) { CUR.moves.push({ t0: t0 + OFF, t1: t1 + OFF, target, from }); }
+function curClick(tc, snd = 'click') { CUR.clicks.push(tc + OFF); cue(tc, snd); }
+function curShow(a, b) { CUR.wins.push([a + OFF, b + OFF]); }
 function curUpdate(t) {
   let v = 0;
   for (const [a, b] of CUR.wins) v = Math.max(v, env(t, a, b, .35, .35));
@@ -159,15 +173,19 @@ function curUpdate(t) {
 
 /* ---------- shared content ---------- */
 const POLES = [
-  { k: 'btp', short: 'BTP', name: 'COHESIF BTP', chips: ['CONSTRUCTION', 'RÉNOVATION', 'CHANTIERS'], line: 'Des solutions pour vos projets de construction.', url: 'cohesifbtp.fr', vis: 'photos', ph: ['chantier', 'engin', 'minipelle25'] },
+  { k: 'btp', short: 'BTP', name: 'COHESIF BTP', chips: ['CONSTRUCTION', 'RÉNOVATION', 'CHANTIERS'], line: 'Du gros œuvre à la rénovation intérieure.', url: 'cohesifbtp.fr', vis: 'photos', ph: ['chantier', 'engin', 'minipelle25'] },
   { k: 'negoce', short: 'NÉGOCE', name: 'COHESIF NÉGOCE', chips: ['MATÉRIAUX', 'FOURNITURES', 'APPROVISIONNEMENT'], line: 'Les ressources nécessaires à vos projets.', url: 'cohesifnegoce.fr', vis: 'negoce' },
-  { k: 'energy', short: 'ENERGY', name: 'COHESIF ENERGY', chips: ['ÉNERGIE', 'PHOTOVOLTAÏQUE', 'MOBILITÉ ÉLECTRIQUE'], line: 'Des solutions pour vos projets énergétiques.', url: 'cohesifenergy.fr', vis: 'photos', ph: ['parking', 'maison', 'station'] },
+  { k: 'energy', short: 'ENERGY', name: 'COHESIF ENERGY', chips: ['ÉNERGIE', 'PHOTOVOLTAÏQUE', 'MOBILITÉ ÉLECTRIQUE'], line: 'Bornes de recharge, solaire et stockage.', url: 'cohesifenergy.fr', vis: 'photos', ph: ['parking', 'maison', 'station'] },
   { k: 'auto', short: 'AUTO', name: 'COHESIF AUTO', chips: ['MOBILITÉ', 'TRANSPORT', 'LOGISTIQUE'], line: 'Vente, import et flottes professionnelles.', url: 'cohesifauto.fr', vis: 'photos', ph: ['flotte', 'classique', 'prestige'] },
   { k: 'commerce', short: 'COMMERCE', name: 'COHESIF COMMERCE', chips: ['DISTRIBUTION', 'B2B · B2C', 'E-COMMERCE'], line: 'Vous pouvez acheter en ligne.', url: 'cohesifcommerce.fr', vis: 'shop', tall: true },
   { k: 'access', short: 'ACCESS', name: 'COHESIF ACCESS', chips: ['IMMOBILIER', "APPORT D'AFFAIRES", 'RÉSEAU PRIVÉ'], line: "Un réseau privé d'apporteurs d'affaires immobilier.", url: 'cohesifaccess.fr', vis: 'access' },
-  { k: 'agro', short: 'AGRO', name: 'COHESIF AGRO', chips: ['ÉQUIPEMENTS', 'EMBALLAGES', 'SOURCING'], line: "Solutions B2B pour l'agroalimentaire.", url: 'cohesifagro.fr', vis: 'photos', ph: ['filmeuse', 'burger', 'filmeuse2'], light: [false, true, true] },
+  { k: 'agro', short: 'AGRO', name: 'COHESIF AGRO', chips: ['ÉQUIPEMENTS', 'EMBALLAGES', 'SOURCING'], line: "Solutions B2B pour l'agroalimentaire.", url: 'cohesifagro.fr', vis: 'photos', ph: ['filmeuse2', 'filmeuse', 'burger'], light: [true, false, true] },
   { k: 'sport', short: 'SPORT', name: 'COHESIF SPORT', chips: ['FOOTBALL', 'GESTION DE CLUBS', 'INFRASTRUCTURES'], line: 'La gestion de clubs de football.', url: 'cohesifsport.fr', vis: 'sport' },
+  { k: 'net', short: 'NET', name: 'COHESIF NET', chips: ['NETTOYAGE', 'PARTICULIERS', 'PROFESSIONNELS'], line: 'Le nettoyage professionnel, à domicile comme en entreprise.', url: 'cohesifnet.fr', vis: 'net' },
+  { k: 'leasing', short: 'LEASING', name: 'COHESIF LEASING', chips: ['FINANCEMENT', 'LEASING', 'PROFESSIONNELS'], line: 'Les équipements du groupe, financés en leasing.', url: 'cohesifleasing.fr', vis: 'photos', ph: ['champ', 'minipelle', 'classique'] },
 ];
+const NP = POLES.length;
+const PN = i => String(i + 1).padStart(2, '0');
 const NB = ' ';
 
 /* ring of poles around the group logo (used by the hub and the ecosystem scene) */
@@ -181,7 +199,7 @@ function makeRing(parent, o) {
   css(logo, { left: o.cx + 'px', top: o.cy + 'px', width: o.logoW + 'px' });
   const nodes = [], lines = [], pulses = [];
   POLES.forEach((p, i) => {
-    const ang = -Math.PI / 2 + i * Math.PI * 2 / 8;
+    const ang = -Math.PI / 2 + i * Math.PI * 2 / POLES.length;
     const x = o.cx + Math.cos(ang) * o.rx, y = o.cy + Math.sin(ang) * o.ry;
     const n = h('div', 'node' + (y < o.cy - 1 ? ' up' : ''), `<div class="dot"><i></i></div><div class="lab"><small>COHESIF</small><b>${p.short}</b></div>`, root);
     css(n, { left: x + 'px', top: y + 'px' });
@@ -235,7 +253,7 @@ function ringPulses(R, t, a, b) {
   const lwW = pick(520, 560, 500);
   lw.style.width = lwW + 'px';
   const mk = txt => RV(h('div', 'centerblock', null, s.root), 'h1', txt);
-  const t1 = mk('UN GROUPE.'), t2 = mk('PLUSIEURS EXPERTISES.'), t3 = mk('DES SOLUTIONS POUR VOS PROJETS.');
+  const t1 = mk('UN GROUPE.'), t2 = mk('PLUSIEURS EXPERTISES.'), t3 = mk('À VOTRE ÉCOUTE.');
   const hair3 = h('div', 'hair abs', null, s.root);
   cue(.9, 'swell'); cue(2.4, 'impact'); cue(4.9, 'whoosh_soft'); cue(7.25, 'whoosh_soft'); cue(9.65, 'whoosh_soft');
   function upd(t) {
@@ -260,8 +278,8 @@ function ringPulses(R, t, a, b) {
    ===================================================================== */
 {
   const s = scene(11.95, 19.65, upd);
-  const VERBS = [['CONSTRUIRE', 'chantier'], ['APPROVISIONNER', 'filmeuse'], ['ÉQUIPER', 'minipelle'], ['TRANSPORTER', 'flotte'], ['ACCOMPAGNER', 'parking']];
-  const photosWrap = h('div', 'abs', null, s.root); css(photosWrap, { inset: 0 });
+  const VERBS = [['CONSTRUIRE', 'chantier'], ['APPROVISIONNER', 'gamme'], ['ÉQUIPER', 'minipelle'], ['TRANSPORTER', 'flotte'], ['ACCOMPAGNER', 'net']];
+  const photosWrap = photoCard(s.root);
   const photos = VERBS.map(([, k]) => { const p = h('div', 'photo', `<div class="im" style="background-image:${bgi(k)}"></div><div class="tint"></div><div class="ov"></div>`, photosWrap); return { p, im: p.querySelector('.im') }; });
   const idx = h('div', 'verbIdx', '', s.root); idx.style.top = (CY - pick(110, 110, 104)) + 'px';
   const verbs = VERBS.map(([v]) => RV(h('div', 'centerblock', null, s.root), 'h1', v));
@@ -280,7 +298,7 @@ function ringPulses(R, t, a, b) {
       ph.p.style.clipPath = i === 0 ? `inset(0 0 0 0)` : `inset(0 0 0 ${((1 - p) * 100).toFixed(2)}%)`;
       ph.p.style.opacity = i === 0 ? E.o3(P(t, 11.95, 12.6)).toFixed(3) : 1;
       const kb = P(t, ti - .2, ti + 2.4);
-      ph.im.style.transform = `scale(${lerp(1.14, 1.03, E.o3(kb)).toFixed(4)}) translateX(${lerp(14, -14, kb).toFixed(2)}px)`;
+      ph.im.style.transform = `scale(${lerp(1.045, 1.0, E.o3(kb)).toFixed(4)}) translateX(${lerp(8, -8, kb).toFixed(2)}px)`;
     });
     photosWrap.style.opacity = (1 - E.io(P(t, 17.85, 18.5))).toFixed(3);
     let act = -1;
@@ -298,22 +316,22 @@ function ringPulses(R, t, a, b) {
 }
 
 /* =====================================================================
-   SCENE 3 — LES PÔLES (19.2 → 52.8)
+   SCENE 3 — LES PÔLES (19.2 → 60)
    ===================================================================== */
 const WS = i => 22.8 + 3.6 * i;              // window start of pole i
 {
-  const s = scene(19.2, 53.3, upd);
+  const s = scene(19.2, 60.5, upd);
   /* hub */
   const hubG = pick({ cx: 960, cy: 575, rx: 640, ry: 318, r0: 175, logoW: 300 }, { cx: 540, cy: 1000, rx: 360, ry: 470, r0: 190, logoW: 320 }, { cx: 540, cy: 590, rx: 400, ry: 320, r0: 160, logoW: 260 });
-  const hubTitle = h('div', 'hubTitle', `<div class="eyebrow">NOS PÔLES D'ACTIVITÉ</div>`, s.root);
-  const hubT2 = RV(hubTitle, 'h3', 'UN ÉCOSYSTÈME, PLUSIEURS EXPERTISES');
+  const hubTitle = h('div', 'hubTitle', `<div class="eyebrow">L'ÉCOSYSTÈME GROUPE COHESIF</div>`, s.root);
+  const hubT2 = RV(hubTitle, 'h3', "DIX PÔLES D'ACTIVITÉ");
   hubT2.o.style.marginTop = '14px';
   const R = makeRing(s.root, hubG);
   /* panel */
   const panel = h('div', 'panel', null, s.root);
   const nav = h('div', 'nav', `<img class="navLogo" src="${LOGO('groupe-white')}"><div class="navHead">L'ÉCOSYSTÈME</div>`, panel);
   const items = h('div', 'items', null, nav);
-  const its = POLES.map((p, i) => h('div', 'it', `<small>0${i + 1}</small>${p.short}`, items));
+  const its = POLES.map((p, i) => h('div', 'it', `<small>${PN(i)}</small>${p.short}`, items));
   const bar = h('div', 'bar', null, items);
   const VIS = pick([640, 700], [960, 620], [1000, 450]);
   const groups = POLES.map((p, i) => buildPole(p, i, panel));
@@ -321,23 +339,23 @@ const WS = i => 22.8 + 3.6 * i;              // window start of pole i
   cue(19.4, 'swell_short', .6);
   POLES.forEach((_, i) => cue(19.6 + .08 * i, 'blip', .35));
   cue(22.15, 'zoom');
-  for (let i = 0; i < 8; i++) cue(WS(i) - .3, 'whoosh_ui', .55);
-  cue(51.75, 'zoom_out');
+  for (let i = 0; i < NP; i++) cue(WS(i) - .3, 'whoosh_ui', .55);
+  cue(58.95, 'zoom_out');
 
-  curShow(20.5, 48.0);
+  curShow(20.5, 55.2);
   const nodeP = i => [R.nodes[i].x, R.nodes[i].y];
   curMove(20.7, 21.75, () => nodeP(0), () => [W * .82, H * .9]);
   curClick(21.95);
   const itemP = i => LAND ? (() => { const r = rect(its[i]); return [r.left + 110, r.top + r.height / 2]; })() : ctr(its[i]);
   curMove(22.9, 23.9, () => [pick(1380, 820, 860), pick(820, 1500, 880)]);
-  for (let i = 1; i < 8; i++) { curMove(WS(i) - 1.5, WS(i) - .9, () => itemP(i)); curClick(WS(i) - .8, 'click'); }
-  curMove(WS(7) + .2, WS(7) + 1.3, () => [pick(1400, 800, 860), pick(900, 1600, 900)]);
+  for (let i = 1; i < NP; i++) { curMove(WS(i) - 1.5, WS(i) - .9, () => itemP(i)); curClick(WS(i) - .8, 'click'); }
+  curMove(WS(NP - 1) + .2, WS(NP - 1) + 1.3, () => [pick(1400, 800, 860), pick(900, 1600, 900)]);
 
   function buildPole(p, i, parent) {
     const g = h('div', 'pc', null, parent);
     const tx = h('div', 'pc-text', null, g);
     const lc = h('div', 'lcard' + (p.tall ? ' tall' : ''), `<img src="${LOGO(p.k)}">`, tx);
-    const num = h('div', 'pc-num', `PÔLE 0${i + 1}`, tx);
+    const num = h('div', 'pc-num', `PÔLE ${PN(i)}`, tx);
     const title = RV(tx, 'pc-title', p.name.replace('COHESIF ', 'COHESIF<br>'));
     const chips = h('div', 'pc-chips', p.chips.join('<em>•</em>'), tx);
     const hair = h('div', 'pc-hair', null, tx);
@@ -358,13 +376,22 @@ const WS = i => 22.8 + 3.6 * i;              // window start of pole i
       else { const h1 = Math.round(vh * .58); tile(0, 0, vw, h1, p.ph[0], L[0]); tile(0, h1 + gap, (vw - gap) / 2, vh - h1 - gap, p.ph[1], L[1]); tile((vw + gap) / 2, h1 + gap, (vw - gap) / 2, vh - h1 - gap, p.ph[2], L[2]); }
     } else if (p.vis === 'negoce') {
       const MATS = ['BOIS', 'MÉTAUX', 'CUIVRE', 'ISOLANTS', 'CLOISONS', 'FIXATIONS'];
-      let gx, gy, gw, gh, cols;
-      if (SQ) { const w1 = Math.round(vw * .44); tile(0, 0, w1, vh, 'filmeuse'); gx = w1 + gap; gy = 0; gw = vw - gx; gh = vh; cols = 2; }
-      else { const h1 = Math.round(vh * .5); tile(0, 0, vw, h1, 'filmeuse'); gx = 0; gy = h1 + gap; gw = vw; gh = vh - gy; cols = PORT ? 3 : 2; }
-      const rows = Math.ceil(6 / cols), cw = (gw - gap * (cols - 1)) / cols, ch = (gh - gap * (rows - 1)) / rows;
-      G.mats = MATS.map((m, j) => {
-        const el = h('div', 'mat', `<small>0${j + 1}</small><b>${m}</b>`, v);
-        css(el, { left: gx + (j % cols) * (cw + gap) + 'px', top: gy + Math.floor(j / cols) * (ch + gap) + 'px', width: cw + 'px', height: ch + 'px' });
+      const head = h('div', 'matHead', 'MATÉRIAUX DE CONSTRUCTION', v);
+      const cols = LAND ? 2 : 3, rows = 6 / cols, gy = SQ ? 46 : 60;
+      const cw = (vw - gap * (cols - 1)) / cols, ch = (vh - gy - gap * (rows - 1)) / rows;
+      G.mats = [head, ...MATS.map((m, j) => {
+        const el = h('div', 'mat', `<small>${PN(j)}</small><b>${m}</b>`, v);
+        css(el, { left: (j % cols) * (cw + gap) + 'px', top: gy + Math.floor(j / cols) * (ch + gap) + 'px', width: cw + 'px', height: ch + 'px' });
+        return el;
+      })];
+    } else if (p.vis === 'net') {
+      const SV = [['CANAPÉS & MATELAS', 'Résidentiel'], ['VITRES', 'Résidentiel'], ['FIN DE CHANTIER', 'Professionnel'], ['LOCAUX & BUREAUX', 'Professionnel']];
+      const w1 = Math.round(vw * (LAND ? .46 : .38));
+      tile(0, 0, w1, vh, 'net');
+      const cols = SQ ? 2 : 1, rows = 4 / cols, gx = w1 + gap, cw = (vw - gx - gap * (cols - 1)) / cols, ch = (vh - gap * (rows - 1)) / rows;
+      G.mats = SV.map(([m, sub], j) => {
+        const el = h('div', 'mat', `<small>${sub.toUpperCase()}</small><b>${m}</b>`, v);
+        css(el, { left: gx + (j % cols) * (cw + gap) + 'px', top: Math.floor(j / cols) * (ch + gap) + 'px', width: cw + 'px', height: ch + 'px' });
         return el;
       });
     } else if (p.vis === 'shop') {
@@ -383,28 +410,28 @@ const WS = i => 22.8 + 3.6 * i;              // window start of pole i
 
   function upd(t) {
     /* hub */
-    const zoomIn = E.i3(P(t, 22.1, 22.75)), back = E.o3(P(t, 51.8, 52.5));
+    const zoomIn = E.i3(P(t, 22.1, 22.75)), back = E.o3(P(t, 59, 59.7));
     let hs = 1, hop = 1, origin = [R.nodes[0].x, R.nodes[0].y];
     if (t < 30) { hs = lerp(1, 2.6, zoomIn); hop = (1 - E.io(P(t, 22.15, 22.75))) * E.o3(P(t, 19.2, 19.6)); }
-    else { origin = [R.nodes[7].x, R.nodes[7].y]; hs = lerp(2.6, 1, back); hop = E.io(P(t, 51.8, 52.3)) * (1 - E.i2(P(t, 52.45, 52.85))); }
+    else { origin = [R.nodes[NP - 1].x, R.nodes[NP - 1].y]; hs = lerp(2.6, 1, back); hop = E.io(P(t, 59, 59.5)) * (1 - E.i2(P(t, 59.65, 60.05))); }
     css(R.root, { transformOrigin: `${origin[0]}px ${origin[1]}px`, transform: `scale(${hs.toFixed(4)})`, opacity: hop.toFixed(3), display: hop > 0 ? 'block' : 'none' });
     css(hubTitle, { opacity: hop.toFixed(3), display: hop > 0 ? 'block' : 'none' });
     if (hop > 0) {
       const lineA = t < 30 ? 19.35 : -10;
       ringLines(R, t, lineA, .06, 1.0);
       ringNodes(R, t, t < 30 ? 19.6 : -10, .08, i => t < 30 ? (i === 0 ? E.o3(P(t, 21.95, 22.2)) : 0) : 1);
-      ringPulses(R, t, t < 30 ? 99 : 52.0, t < 30 ? 99 : 53.3);
+      ringPulses(R, t, t < 30 ? 99 : 59.2, t < 30 ? 99 : 60.5);
       R.logo.style.opacity = (t < 30 ? E.o3(P(t, 19.3, 20.4)) : 1).toFixed(3);
-      if (t < 30) rv(hubT2, t, 19.7, 22.3, { outD: .35 }); else rv(hubT2, t, 51.9, 52.85, { inD: .7, outD: .35 });
-      hubTitle.firstChild.style.opacity = (t < 30 ? E.o3(P(t, 19.5, 20.2)) : E.o3(P(t, 51.8, 52.4)) * (1 - P(t, 52.45, 52.85))).toFixed(3);
+      if (t < 30) rv(hubT2, t, 19.7, 22.3, { outD: .35 }); else rv(hubT2, t, 59.1, 60.05, { inD: .7, outD: .35 });
+      hubTitle.firstChild.style.opacity = (t < 30 ? E.o3(P(t, 19.5, 20.2)) : E.o3(P(t, 59, 59.6)) * (1 - P(t, 59.65, 60.05))).toFixed(3);
     }
     /* panel */
-    const pin = E.o3(P(t, 22.35, 23.0)), pout = E.io(P(t, 51.45, 51.85));
+    const pin = E.o3(P(t, 22.35, 23.0)), pout = E.io(P(t, 58.65, 59.05));
     const pop = pin * (1 - pout);
     css(panel, { opacity: pop.toFixed(3), display: pop > 0 ? 'block' : 'none', transform: `scale(${(lerp(1.05, 1, pin) * lerp(1, .94, pout)).toFixed(4)})`, filter: pout > .01 ? `blur(${(pout * 6).toFixed(2)}px)` : 'none' });
     if (pop <= 0) return;
     /* nav indicator */
-    let a = 0; for (let i = 1; i < 8; i++) if (t >= WS(i) - .8) a = i;
+    let a = 0; for (let i = 1; i < NP; i++) if (t >= WS(i) - .8) a = i;
     const k = E.io(P(t, WS(a) - .8, WS(a) - .35));
     const ra = rect(its[a]), rb = rect(its[Math.max(0, a - 1)]), rI = rect(items);
     const top = lerp(rb.top, ra.top, a ? k : 1) - rI.top, left = lerp(rb.left, ra.left, a ? k : 1) - rI.left;
@@ -413,7 +440,7 @@ const WS = i => 22.8 + 3.6 * i;              // window start of pole i
     its.forEach((el, i) => { const on = i === a ? (a ? k : 1) : (i === a - 1 ? 1 - k : 0); el.style.color = `rgba(243,245,249,${(.34 + .66 * on).toFixed(3)})`; });
     /* content */
     groups.forEach((G, i) => {
-      const a0 = i === 0 ? 22.5 : WS(i) - .35, b0 = i === 7 ? 51.9 : WS(i + 1) - .4;
+      const a0 = i === 0 ? 22.5 : WS(i) - .35, b0 = i === NP - 1 ? 59.1 : WS(i + 1) - .4;
       if (t < a0 || t >= b0) { G.g.style.display = 'none'; return; }
       G.g.style.display = 'block';
       const o = { dout: .35, oy: 0, ox: 40, bo: 6 };
@@ -430,7 +457,7 @@ const WS = i => 22.8 + 3.6 * i;              // window start of pole i
       G.tiles.forEach((tl, j) => {
         const kk = E.o3(P(t, a0 + .05 + .12 * j, a0 + .75 + .12 * j));
         css(tl.el, { opacity: kk.toFixed(3), transform: `translateY(${((1 - kk) * 36).toFixed(1)}px)`, clipPath: `inset(${((1 - kk) * 30).toFixed(1)}% 0 0 0 round 16px)` });
-        tl.im.style.transform = `scale(${lerp(tl.el.classList.contains('light') ? 1.04 : 1.14, 1, E.o3(P(t, a0, a0 + 4))).toFixed(4)})`;
+        tl.im.style.transform = `scale(${lerp(tl.el.classList.contains('light') ? 1.03 : 1.05, 1, E.o3(P(t, a0, a0 + 4))).toFixed(4)})`;
       });
       if (G.mats) G.mats.forEach((m, j) => fu(m, t, a0 + .45 + .09 * j, b0, { dy: 18, di: .5, dout: .3, blur: false }));
       if (G.mcards) {
@@ -533,6 +560,8 @@ function sportSVG(v, vw, vh) {
     trail.setAttribute('d', d); trail.setAttribute('opacity', E.o3(P(t, a0 + 1.0, a0 + 1.3)) * .9);
   };
 }
+
+OFF = 7.2;   // deux pôles ajoutés (Net, Leasing) : +3 mesures
 
 /* =====================================================================
    SCENE 4 — LA BOUTIQUE (52.8 → 76.8)
@@ -791,13 +820,14 @@ const SH = 52.8, ST = k => SH + 3 * k;
 /* =====================================================================
    SCENE 6 — PLUS QU'UNE BOUTIQUE (86.4 → 98.4)
    ===================================================================== */
-const QS = [['UN CHANTIER', 'chantier', 'CHANTIER'], ["UN BESOIN D'APPROVISIONNEMENT", 'filmeuse', 'APPROVISIONNEMENT'], ['DU MATÉRIEL', 'minipelle', 'MATÉRIEL'],
-  ['UNE SOLUTION ÉNERGÉTIQUE', 'parking', 'ÉNERGIE'], ['UN BESOIN EN TRANSPORT', 'flotte', 'TRANSPORT'], ['UN BESOIN PROFESSIONNEL', 'engin', 'PROFESSIONNEL']];
+const QS = [['UN CHANTIER', 'chantier', 'CHANTIER'], ["UN BESOIN D'APPROVISIONNEMENT", 'gamme', 'APPROVISIONNEMENT'], ['DU MATÉRIEL', 'minipelle', 'MATÉRIEL'],
+  ['UNE SOLUTION ÉNERGÉTIQUE', 'parking', 'ÉNERGIE'], ['UN BESOIN EN TRANSPORT', 'flotte', 'TRANSPORT'], ['UN BESOIN PROFESSIONNEL', 'net', 'PROFESSIONNEL']];
 {
   const s = scene(86.4, 98.6, upd);
   const eb = h('div', 'eyebrow abs', "PLUS QU'UNE BOUTIQUE EN LIGNE", s.root); css(eb, { left: 0, right: 0, top: (CY - pick(100, 110, 100)) + 'px' });
   const q0 = RV(h('div', 'centerblock', null, s.root), 'h1', `VOUS AVEZ UN PROJET${NB}?`);
-  const photos = QS.map(([, k]) => { const p = h('div', 'photo', `<div class="im" style="background-image:${bgi(k)}"></div><div class="tint"></div><div class="ov"></div>`, s.root); return { p, im: p.querySelector('.im') }; });
+  const qcard = photoCard(s.root);
+  const photos = QS.map(([, k]) => { const p = h('div', 'photo', `<div class="im" style="background-image:${bgi(k)}"></div><div class="tint"></div><div class="ov"></div>`, qcard); return { p, im: p.querySelector('.im') }; });
   const qs = QS.map(([q]) => RV(h('div', 'centerblock', null, s.root), 'h1', `${q}${NB}?`));
   const tiles = h('div', 'qTiles', null, s.root);
   const [cols, tw, th, gap] = pick([3, 440, 250, 30], [2, 440, 290, 26], [3, 300, 210, 20]);
@@ -824,7 +854,7 @@ const QS = [['UN CHANTIER', 'chantier', 'CHANTIER'], ["UN BESOIN D'APPROVISIONNE
       const dir = i % 2 ? 1 : -1;
       ph.p.style.clipPath = dir > 0 ? `inset(0 ${((1 - p) * 100).toFixed(2)}% 0 0)` : `inset(0 0 0 ${((1 - p) * 100).toFixed(2)}%)`;
       ph.p.style.opacity = i === 5 ? (1 - E.io(P(t, 95.9, 96.3))).toFixed(3) : 1;
-      ph.im.style.transform = `scale(${lerp(1.15, 1.04, E.o3(P(t, a, a + 1.6))).toFixed(4)})`;
+      ph.im.style.transform = `scale(${lerp(1.05, 1.0, E.o3(P(t, a, a + 1.6))).toFixed(4)})`;
     });
     qs.forEach((r, i) => rv(r, t, QA(i) + .04, QA(i) + 1.2, { inD: .5, outD: .22 }));
     tl.forEach((T, i) => {
@@ -869,11 +899,11 @@ const QS = [['UN CHANTIER', 'chantier', 'CHANTIER'], ["UN BESOIN D'APPROVISIONNE
    ===================================================================== */
 {
   const s = scene(105.55, 115.45, upd);
-  const FR = pick([210, 100, 1500, 640], [60, 330, 960, 920], [60, 70, 960, 600]);
-  const TY = pick(870, 1390, 820);
+  const FR = pick([410, 110, 1100, 620], [60, 520, 960, 640], [60, 80, 960, 580]);
+  const TY = pick(860, 1330, 810);
   const fr = h('div', 'cframe', null, s.root);
   css(fr, { left: FR[0] + 'px', top: FR[1] + 'px', width: FR[2] + 'px', height: FR[3] + 'px' });
-  const PH = [['engin', 105.6], ['filmeuse', 108.0], ['flotte', 110.4], ['parking', 112.8]];
+  const PH = [['engin', 105.6], ['chantier', 108.0], ['flotte', 110.4], ['parking', 112.8]];
   const photos = PH.map(([k]) => { const p = h('div', 'photo', `<div class="im" style="background-image:${bgi(k)}"></div><div class="tint"></div><div class="ov"></div>`, fr); return { p, im: p.querySelector('.im') }; });
   const corners = [0, 1, 2, 3].map(i => {
     const c = h('div', 'corner', null, s.root);
@@ -893,7 +923,7 @@ const QS = [['UN CHANTIER', 'chantier', 'CHANTIER'], ["UN BESOIN D'APPROVISIONNE
       vis(ph.p, t >= a - .4 && t < (i < 3 ? PH[i + 1][1] + .7 : 999));
       ph.p.style.opacity = op.toFixed(3);
       const k = P(t, a - .4, a + 3.2);
-      ph.im.style.transform = `scale(${lerp(1.1, 1.02, k).toFixed(4)}) translateX(${lerp(i % 2 ? -18 : 18, i % 2 ? 18 : -18, k).toFixed(1)}px)`;
+      ph.im.style.transform = `scale(${lerp(1.05, 1.0, k).toFixed(4)}) translateX(${lerp(i % 2 ? -8 : 8, i % 2 ? 8 : -8, k).toFixed(1)}px)`;
     });
     corners.forEach((c, i) => { const k = E.o3(P(t, 106.0 + .08 * i, 106.6 + .08 * i)) * (1 - fo); c.style.opacity = k.toFixed(3); });
     rv(t1, t, 105.95, 109.0, { inD: 1.1, outD: .5 });
@@ -903,11 +933,81 @@ const QS = [['UN CHANTIER', 'chantier', 'CHANTIER'], ["UN BESOIN D'APPROVISIONNE
 }
 
 /* =====================================================================
+   SCENE 9 — NOUS CONTACTER : chat en ligne, rappel par un conseiller, WhatsApp (115.2 → 127.2 + OFF)
+   ===================================================================== */
+{
+  const s = scene(115.15, 127.25, upd);
+  const ttl = h('div', 'procTitle', null, s.root);
+  const eb = h('div', 'eyebrow', 'NOUS CONTACTER', ttl);
+  const tt = RV(ttl, 'h2', 'ÉCHANGEZ AVEC NOUS'); tt.o.style.marginTop = '14px';
+  const CH = pick([250, 250, 484, 567], [140, 470, 667, 584], [40, 175, 500, 860]);   // land/port : zoom 1.2 (style.css)
+  const chat = h('div', 'chatw', null, s.root);
+  const ZC = SQ ? 1 : 1.2;   // zoom CSS : left/top sont aussi multipliés
+  css(chat, { left: CH[0] / ZC + 'px', top: CH[1] / ZC + 'px', width: CH[2] + 'px', height: CH[3] + 'px' });
+  h('div', 'chath', `<div class="cav">${svgI('chat', 24, '#fff', 1.8)}</div><div><b>Conseiller Cohesif Energy</b><small><i></i>En ligne · Répond instantanément</small></div>`, chat);
+  const body = h('div', 'chatb', null, chat);
+  const msg = (cls, html) => h('div', 'cm ' + cls, html, body);
+  const m1 = msg('bot', "Bonjour ! Je peux vous aider sur votre projet. Comment puis-je vous aider ?");
+  const sug = h('div', 'csug', '<span>Devis gratuit</span><span>Bornes de recharge</span><span class="ag">Parler à un agent</span>', body);
+  const agent = sug.querySelector('.ag');
+  const m2 = msg('me', 'Parler à un agent');
+  const typ1 = msg('bot typing', '<i></i><i></i><i></i>');
+  const m3 = msg('bot', '<b>Un agent est disponible.</b><br>Quel est votre numéro de téléphone ?');
+  const m4 = msg('me', `06${NB}••${NB}••${NB}••${NB}••`);
+  const typ2 = msg('bot typing', '<i></i><i></i><i></i>');
+  const m5 = msg('bot ok', '<b>✓ Demande enregistrée.</b><br>Un agent va vous rappeler.');
+  const inp = h('div', 'chati', `<div class="field"><span class="ph">Votre téléphone…</span><span class="tx"></span><i class="car"></i></div><div class="snd">${svgI('send', 20, '#fff', 1.8)}</div>`, chat);
+  const inTx = inp.querySelector('.tx'), inPh = inp.querySelector('.ph'), inCar = inp.querySelector('.car'), snd = inp.querySelector('.snd');
+  h('div', 'chatf', 'Propulsé par IA · Cohesif Energy', chat);
+  const CARDS = [['chat', 'CHAT EN LIGNE', 'Sur les sites du groupe'], ['phone', 'RAPPEL PAR UN CONSEILLER', 'Laissez votre numéro'], ['wa', 'WHATSAPP', `07${NB}56${NB}85${NB}57${NB}27`], ['mail', 'E-MAIL', 'contact@groupecohesif.fr']];
+  const CC = pick({ x: 920, y: 250, w: 750, h: 152, gap: 24, cols: 1 }, { x: 60, y: 1210, w: 470, h: 160, gap: 20, cols: 2 }, { x: 560, y: 175, w: 480, h: 200, gap: 20, cols: 1 });
+  const cards = CARDS.map(([ic, t1, t2], i) => {
+    const c = h('div', 'ccard', `<div class="cci">${svgI(ic, 30, '#e0c690', 1.6)}</div><div><small>${t1}</small><b>${t2}</b></div>`, s.root);
+    css(c, { left: CC.x + (i % CC.cols) * (CC.w + CC.gap) + 'px', top: CC.y + Math.floor(i / CC.cols) * (CC.h + CC.gap) + 'px', width: CC.w + 'px', height: CC.h + 'px' });
+    return c;
+  });
+  const PHONE = `06${NB}••${NB}••${NB}••${NB}••`;
+  cue(115.6, 'open', .7); cue(116.3, 'blip', .5); cue(118.6, 'blip', .4); cue(119.7, 'blip', .5);
+  for (let k = 0; k < 10; k++) cue(120.2 + k * .1, 'type', .35);
+  cue(121.7, 'blip', .4); cue(122.5, 'confirm', .8);
+  CARDS.forEach((_, i) => cue(123.0 + .18 * i, 'tick', .45));
+  curShow(117.2, 122.3);
+  curMove(117.4, 118.2, () => ctr(agent), () => [CH[0] + CH[2] * .9, CH[1] + CH[3] * 1.05]);
+  curClick(118.4);
+  curMove(120.6, 121.3, () => ctr(snd));
+  curClick(121.5);
+  function upd(t) {
+    const out = 1 - E.i2(P(t, 126.75, 127.25));
+    s.root.style.opacity = out.toFixed(3);
+    fu(eb, t, 115.3, 999, { dy: 10 });
+    rv(tt, t, 115.4, 999);
+    const ci = E.o3(P(t, 115.6, 116.3));
+    css(chat, { opacity: ci.toFixed(3), transform: `translateY(${((1 - ci) * 40).toFixed(1)}px) scale(${lerp(.96, 1, ci).toFixed(4)})` });
+    const show = (el, a, b = 999) => { const k = E.o3(P(t, a, a + .35)); const on = t >= a && t < b; el.style.display = on ? 'block' : 'none'; if (on) css(el, { opacity: k.toFixed(3), transform: `translateY(${((1 - k) * 14).toFixed(1)}px)` }); };
+    show(m1, 116.3); show(m2, 118.6); show(typ1, 118.9, 119.7); show(m3, 119.7); show(m4, 121.7); show(typ2, 121.9, 122.5); show(m5, 122.5);
+    const sk = E.o3(P(t, 116.8, 117.2));
+    sug.style.display = t < 118.6 ? 'flex' : 'none';
+    css(sug, { opacity: sk.toFixed(3), transform: `translateY(${((1 - sk) * 12).toFixed(1)}px)` });
+    agent.style.transform = `scale(${(1 - .06 * Math.sin(Math.PI * P(t, 118.4, 118.6))).toFixed(3)})`;
+    [typ1, typ2].forEach(ty => [...ty.children].forEach((d, j) => { d.style.opacity = (.35 + .65 * Math.max(0, Math.sin(t * 9 - j * .9))).toFixed(3); }));
+    const n = Math.round(C((t - 120.2) / 1.0) * PHONE.length);
+    const sent = t >= 121.5;
+    inTx.textContent = sent ? '' : PHONE.slice(0, n);
+    inPh.style.display = n > 0 && !sent ? 'none' : 'inline';
+    inCar.style.opacity = t > 120.0 && t < 121.5 && Math.floor(t * 3) % 2 === 0 ? 1 : 0;
+    snd.style.transform = `scale(${(1 - .1 * Math.sin(Math.PI * P(t, 121.5, 121.7))).toFixed(3)})`;
+    cards.forEach((c, i) => fu(c, t, 123.0 + .18 * i, 999, { dy: 24, dx: LAND || SQ ? 30 : 0 }));
+  }
+}
+
+OFF = 19.2;   // + scène contact (5 mesures)
+
+/* =====================================================================
    SCENE 10 — FINAL (115.2 → 130)
    ===================================================================== */
-const DURATION = 130;
+const DURATION = 149.2;
 {
-  const s = scene(115.15, DURATION + 1, upd);
+  const s = scene(115.15, 131.5, upd);
   const QQ = ['UN BESOIN', 'UN PROJET', 'UN CHANTIER', 'UNE COMMANDE'];
   const qs = QQ.map(q => { const b = h('div', 'centerblock', null, s.root); const e = h('div', 'h1', `${q}${NB}?`, b); e.style.fontSize = pick(92, 76, 74) + 'px'; return b; });
   const qhair = h('div', 'hair abs', null, s.root);
@@ -924,7 +1024,7 @@ const DURATION = 130;
   const ceb = h('div', 'eyebrow', 'DÉCOUVREZ NOS ACTIVITÉS', cta);
   const curl = RV(cta, 'url2', 'www.groupecohesif.fr'); curl.o.style.marginTop = '22px';
   const chair = h('div', 'hair', null, cta); css(chair, { width: '420px', marginTop: '18px' });
-  const cmail = h('div', 'mail', 'contact@groupecohesif.fr', cta); cmail.style.marginTop = '24px';
+  const cmail = h('div', 'mail', `<span class="wa">${svgI('wa', 28, '#e0c690', 1.6)}WhatsApp ${NB}07${NB}56${NB}85${NB}57${NB}27</span><span class="sep"></span><span>contact@groupecohesif.fr</span>`, cta); cmail.style.marginTop = '26px';
   const row = h('div', 'poleRow', POLES.map(p => `<span>${p.short}</span>`).join(''), s.root);
   const rsp = [...row.children];
   [115.2, 115.8, 116.4, 117.0].forEach((a, i) => cue(a, 'hit', .8 + .07 * i));

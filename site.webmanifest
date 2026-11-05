@@ -1,0 +1,11 @@
+{
+  "name": "Groupe Cohesif",
+  "short_name": "Cohesif",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#0b1c3d",
+  "background_color": "#0b1c3d",
+  "display": "browser"
+}

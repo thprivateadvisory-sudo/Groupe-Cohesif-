@@ -1,4 +1,4 @@
-Le Groupe Cohésif se développe à vitesse grand V.
+Le Groupe Cohesif se développe à vitesse grand V.
 
 En deux ans, on est passés de quelques activités à dix pôles :
 Commerce, Immobilier, BTP, Auto, Énergie, Agro, Négoce, Sport, Net et Leasing.

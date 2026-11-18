@@ -1,20 +1,18 @@
 Le Groupe Cohésif se développe à vitesse grand V.
 
-Il y a deux ans, on démarrait à Paris avec une idée simple : des entreprises différentes qui avancent mieux ensemble qu'en solo.
-
-Aujourd'hui, on compte dix pôles :
+En deux ans, on est passés de quelques activités à dix pôles :
 Commerce, Immobilier, BTP, Auto, Énergie, Agro, Négoce, Sport, Net et Leasing.
 
-Chaque pôle a ses équipes et ses clients. Tous partagent le même réseau, les mêmes ressources et la même envie d'aller loin.
-Un chantier BTP qui a besoin de matériaux ? Le Négoce est là. Une flotte qui passe à l'électrique ? Auto et Énergie travaillent main dans la main.
+Pour vous, ça change tout : un seul interlocuteur pour plusieurs besoins.
 
-Et ce n'est que le début.
+Vous rénovez un local ? Le BTP s'occupe du chantier, le Négoce fournit les matériaux, le Leasing finance l'équipement.
+Vous passez votre flotte à l'électrique ? Auto et Énergie s'en chargent ensemble, véhicules et bornes de recharge compris.
+Vous cherchez un bien hors marché ? Notre réseau immobilier privé est là pour ça.
 
-On cherche des gens qui ont envie de construire avec nous :
-→ des talents qui veulent rejoindre une structure qui bouge,
-→ des partenaires qui veulent grandir avec un groupe solide,
-→ des clients qui veulent un seul interlocuteur pour plusieurs besoins.
+Moins d'intermédiaires, moins de délais, et une équipe qui connaît votre dossier de A à Z.
 
-Vous vous reconnaissez ? Venez découvrir le groupe sur groupecohesif.fr ou écrivez-nous à contact@groupecohesif.fr.
+Un projet en tête ? Parlons-en.
+groupecohesif.fr
+contact@groupecohesif.fr
 
-#GroupeCohesif #Entrepreneuriat #Croissance #Paris #BTP #Immobilier #Energie #Recrutement
+#GroupeCohesif #Entreprise #Paris #BTP #Immobilier #Energie #Automobile #Leasing

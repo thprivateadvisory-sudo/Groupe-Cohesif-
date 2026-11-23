@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Groupe Cohesif — Visuel LinkedIn / Facebook</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Barlow:wght@400;500&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0b1c3d;--navy2:#162d5a;--gold:#c9a84c;--paper:#f2f0ec;--ink:#1a2535;--ink2:#3d4f68;--slate:#8a97aa}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{width:1200px;height:627px;overflow:hidden;background:var(--paper)}
+  .card{position:relative;width:1200px;height:627px;display:grid;grid-template-columns:560px 640px;background:var(--paper);color:var(--ink);font-family:'Barlow',sans-serif}
+  .cond{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase}
+  .serif{font-family:'Playfair Display',serif}
+
+  /* Colonne gauche */
+  .left{position:relative;padding:52px 56px 44px 64px;display:flex;flex-direction:column}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand img{height:38px}
+  .brand .t{font-size:15px;letter-spacing:.34em;font-weight:600;color:var(--navy);line-height:1.25}
+  .brand .t small{display:block;font-size:11px;letter-spacing:.3em;color:var(--slate);font-weight:500}
+  h1{margin-top:auto;font-size:68px;line-height:1.02;font-weight:500;color:var(--navy);letter-spacing:-.01em}
+  h1 em{color:var(--gold);font-style:italic}
+  .lede{margin-top:26px;font-size:18px;line-height:1.5;color:var(--ink2);max-width:420px}
+  .facts{margin-top:34px;display:flex;border-top:1px solid rgba(11,28,61,.18)}
+  .facts div{flex:1;padding-top:14px}
+  .facts b{display:block;font-family:'Playfair Display';font-size:30px;font-weight:700;color:var(--navy);line-height:1}
+  .facts span{display:block;margin-top:6px;font-size:12px;letter-spacing:.16em;color:var(--slate)}
+
+  /* Colonne droite */
+  .right{position:relative;background:var(--navy);color:var(--paper);padding:52px 56px 44px 56px;display:flex;flex-direction:column}
+  .right::before{content:"";position:absolute;left:0;top:52px;bottom:44px;width:4px;background:var(--gold)}
+  .head{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;letter-spacing:.3em;color:var(--slate);padding-bottom:14px;border-bottom:1px solid rgba(201,168,76,.45)}
+  .head b{color:var(--gold);font-weight:600}
+  .list{display:grid;grid-template-columns:1fr 1fr;column-gap:40px;margin-top:4px}
+  .row{display:grid;grid-template-columns:34px 1fr;align-items:baseline;padding:13px 0 12px;border-bottom:1px solid rgba(242,240,236,.10)}
+  .row .n{font-family:'Playfair Display';font-size:15px;color:var(--gold);font-style:italic}
+  .row .nm{font-family:'Barlow Condensed';font-size:25px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;line-height:1}
+  .row .sc{grid-column:2;margin-top:5px;font-size:13.5px;color:#b9c2d0;line-height:1.3}
+  .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end}
+  .foot .url{font-size:22px;letter-spacing:.14em;color:var(--paper);font-weight:600}
+  .foot .url i{color:var(--gold);font-style:normal}
+  .foot .loc{font-size:12px;letter-spacing:.26em;color:var(--slate);text-align:right;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="card">
+  <section class="left">
+    <div class="brand">
+      <img src="../img/gc-mark.png" alt="">
+      <div class="t cond">Groupe Cohesif<small>Paris · Depuis 2024</small></div>
+    </div>
+    <h1 class="serif">Dix métiers.<br><em>Un seul</em> groupe.</h1>
+    <p class="lede">Du chantier au financement, de l’énergie au commerce&nbsp;: dix pôles complémentaires qui avancent ensemble, avec les mêmes standards d’exigence.</p>
+    <div class="facts">
+      <div><b>10</b><span class="cond">pôles</span></div>
+      <div><b>24h</b><span class="cond">pour répondre</span></div>
+      <div><b>48h</b><span class="cond">pour un devis</span></div>
+    </div>
+  </section>
+
+  <section class="right">
+    <div class="head cond"><span>Nos pôles d’expertise</span><b>01 — 10</b></div>
+    <div class="list">
+      <div class="row"><span class="n">01</span><span class="nm">Commerce</span><span class="sc">Distribution B2B &amp; B2C</span></div>
+      <div class="row"><span class="n">06</span><span class="nm">Agro</span><span class="sc">Équipements agroalimentaires</span></div>
+      <div class="row"><span class="n">02</span><span class="nm">Access</span><span class="sc">Immobilier off-market</span></div>
+      <div class="row"><span class="n">07</span><span class="nm">Négoce</span><span class="sc">Matériaux de construction</span></div>
+      <div class="row"><span class="n">03</span><span class="nm">BTP</span><span class="sc">Gros œuvre &amp; rénovation</span></div>
+      <div class="row"><span class="n">08</span><span class="nm">Sport</span><span class="sc">Gestion de clubs de football</span></div>
+      <div class="row"><span class="n">04</span><span class="nm">Auto</span><span class="sc">Vente, import &amp; flottes</span></div>
+      <div class="row"><span class="n">09</span><span class="nm">Net</span><span class="sc">Nettoyage professionnel</span></div>
+      <div class="row"><span class="n">05</span><span class="nm">Energy</span><span class="sc">IRVE, solaire, PAC</span></div>
+      <div class="row"><span class="n">10</span><span class="nm">Leasing</span><span class="sc">Financement d’équipements</span></div>
+    </div>
+    <div class="foot">
+      <div class="url cond">groupecohesif<i>.fr</i></div>
+      <div class="loc cond">Île-de-France<br>Bâtir · Connecter · Croître</div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

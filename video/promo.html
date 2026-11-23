@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Groupe Cohesif — Vidéo promotionnelle</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0b1c3d;--navy2:#162d5a;--navy3:#1e3f7a;--gold:#c9a84c;--gold2:#e8c96a;--paper:#f2f0ec;--slate:#8a97aa}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1080px;height:1920px;overflow:hidden;background:var(--navy)}
+  #stage{position:relative;width:1080px;height:1920px;overflow:hidden;
+    background:radial-gradient(120% 70% at 50% 0%, #162d5a 0%, #0b1c3d 55%, #070f22 100%);
+    color:var(--paper);font-family:'Barlow',sans-serif}
+  .abs{position:absolute;inset:0}
+  .scene{position:absolute;inset:0;opacity:0}
+  .center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .serif{font-family:'Playfair Display',serif}
+  .cond{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase}
+  .gold{color:var(--gold)}
+  .it{font-style:italic}
+
+  /* Fond : grille + halo */
+  #grid{opacity:.35;background-image:
+      linear-gradient(rgba(201,168,76,.07) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(201,168,76,.07) 1px,transparent 1px);
+    background-size:90px 90px}
+  #halo{width:1400px;height:1400px;left:-160px;top:260px;border-radius:50%;
+    background:radial-gradient(circle,rgba(201,168,76,.16) 0%,rgba(201,168,76,0) 60%)}
+  #sweep{width:300px;height:3200px;left:0;top:-600px;
+    background:linear-gradient(90deg,transparent,rgba(232,201,106,.10),transparent);transform-origin:center}
+  #frame{position:absolute;left:48px;right:48px;top:48px;bottom:48px;border:1px solid rgba(201,168,76,.22)}
+  .corner{position:absolute;width:44px;height:44px;border-color:var(--gold);border-style:solid;border-width:0}
+  .tl{left:40px;top:40px;border-left-width:3px;border-top-width:3px}
+  .tr{right:40px;top:40px;border-right-width:3px;border-top-width:3px}
+  .bl{left:40px;bottom:40px;border-left-width:3px;border-bottom-width:3px}
+  .br{right:40px;bottom:40px;border-right-width:3px;border-bottom-width:3px}
+  #topbar{position:absolute;left:96px;right:96px;top:110px;display:flex;justify-content:space-between;
+    font-family:'Barlow Condensed';letter-spacing:.32em;font-size:26px;color:var(--slate);text-transform:uppercase}
+  #botbar{position:absolute;left:96px;right:96px;bottom:110px;display:flex;justify-content:space-between;align-items:center;
+    font-family:'Barlow Condensed';letter-spacing:.32em;font-size:26px;color:var(--slate);text-transform:uppercase}
+  #progress{position:absolute;left:96px;right:96px;bottom:86px;height:2px;background:rgba(255,255,255,.08)}
+  #progress i{display:block;height:100%;width:0;background:var(--gold)}
+
+  /* S1 logo */
+  #s1 img{width:520px}
+  #s1 .kicker{margin-top:70px;font-size:34px;letter-spacing:.6em;color:var(--gold)}
+  #s1 .name{margin-top:18px;font-size:120px;letter-spacing:.18em;font-weight:500}
+  .rule{height:2px;background:var(--gold);width:0;margin:44px auto 0}
+
+  /* S2 slogan */
+  #s2 .w{font-size:190px;line-height:1.08;display:block;font-weight:500}
+  #s2 .sub{margin-top:80px;font-size:38px;letter-spacing:.3em;color:var(--slate)}
+
+  /* S3 intro pôles */
+  #s3 .big{font-size:520px;line-height:.9;font-weight:700;color:var(--gold)}
+  #s3 .l1{font-size:96px;letter-spacing:.06em;margin-top:10px}
+  #s3 .l2{font-size:84px;margin-top:30px}
+
+  /* S4 pôle */
+  #s4 .num{position:absolute;left:96px;top:250px;font-size:420px;line-height:1;font-weight:700;
+    color:transparent;-webkit-text-stroke:3px rgba(201,168,76,.55)}
+  #s4 .icon{position:absolute;right:100px;top:300px;width:320px;height:320px}
+  #s4 .icon svg{width:100%;height:100%;stroke:var(--gold2);fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+  #s4 .content{position:absolute;left:96px;right:96px;top:800px}
+  #s4 .sector{font-size:40px;letter-spacing:.34em;color:var(--gold)}
+  #s4 .bar{height:4px;background:var(--gold);width:0;margin:34px 0 40px}
+  #s4 .brand{font-size:58px;letter-spacing:.42em;color:var(--slate);font-weight:500}
+  #s4 .title{font-size:190px;line-height:.95;font-weight:700;letter-spacing:.01em}
+  #s4 .desc{margin-top:60px;font-size:62px;line-height:1.25;font-family:'Playfair Display';font-style:italic;color:#e9e4d8}
+  #s4 .wipe{position:absolute;left:0;top:0;bottom:0;width:100%;background:var(--gold);transform-origin:left;transform:scaleX(0)}
+  #s4 .chips{position:absolute;left:96px;right:96px;bottom:220px;display:flex;gap:14px}
+  #s4 .chips span{flex:1;height:8px;background:rgba(255,255,255,.1)}
+  #s4 .chips span.on{background:var(--gold)}
+
+  /* S5 chiffres */
+  #s5 .row{display:flex;align-items:baseline;gap:40px;width:880px;padding:46px 0;border-bottom:1px solid rgba(201,168,76,.25)}
+  #s5 .v{font-family:'Playfair Display';font-size:170px;font-weight:700;color:var(--gold);min-width:330px;text-align:left;line-height:1}
+  #s5 .k{font-family:'Barlow Condensed';text-transform:uppercase;font-size:50px;letter-spacing:.12em;text-align:left;line-height:1.15}
+  #s5 .head{font-size:38px;letter-spacing:.22em;color:var(--slate);margin-bottom:40px}
+
+  /* S6 citation */
+  #s6 .q{font-size:300px;line-height:.6;color:var(--gold);height:150px}
+  #s6 .t{font-size:104px;line-height:1.15;font-weight:500;padding:0 90px}
+  #s6 .a{margin-top:70px;font-size:40px;letter-spacing:.3em;color:var(--gold)}
+  #s6 .a2{margin-top:12px;font-size:32px;letter-spacing:.3em;color:var(--slate)}
+
+  /* S7 fin */
+  #s7 img{width:360px}
+  #s7 .name{margin-top:40px;font-size:96px;letter-spacing:.18em;font-weight:500}
+  #s7 .slogan{margin-top:40px;font-size:68px}
+  #s7 .cta{margin-top:110px;font-size:46px;letter-spacing:.22em;color:var(--slate)}
+  #s7 .url{margin-top:26px;display:inline-block;padding:30px 64px;border:2px solid var(--gold);
+    font-size:66px;letter-spacing:.14em;color:var(--gold2)}
+  #s7 .poles{margin-top:90px;font-size:28px;letter-spacing:.24em;color:var(--slate);line-height:1.9;padding:0 120px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="grid" class="abs"></div>
+  <div id="halo" class="abs"></div>
+  <div id="sweep" class="abs"></div>
+  <div id="frame"></div>
+  <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+  <div id="topbar"><span>Groupe Cohesif</span><span id="tb-right">Paris · France</span></div>
+
+  <div id="s1" class="scene center">
+    <img src="gc-mark-light.png" alt="">
+    <div class="kicker cond">Groupe</div>
+    <div class="name cond">Cohesif</div>
+    <div class="rule"></div>
+  </div>
+
+  <div id="s2" class="scene center">
+    <div>
+      <span class="w serif">Bâtir.</span>
+      <span class="w serif it gold">Connecter.</span>
+      <span class="w serif">Croître.</span>
+    </div>
+    <div class="sub cond">Un groupe français multi-pôles</div>
+  </div>
+
+  <div id="s3" class="scene center">
+    <div class="big serif">10</div>
+    <div class="l1 cond">expertises de terrain</div>
+    <div class="l2 serif it gold">un seul groupe.</div>
+  </div>
+
+  <div id="s4" class="scene">
+    <div class="num serif">01</div>
+    <div class="icon"></div>
+    <div class="content">
+      <div class="sector cond">Distribution</div>
+      <div class="bar"></div>
+      <div class="brand cond">Cohesif</div>
+      <div class="title cond">Commerce</div>
+      <div class="desc">…</div>
+    </div>
+    <div class="chips"></div>
+    <div class="wipe"></div>
+  </div>
+
+  <div id="s5" class="scene center">
+    <div class="head cond">Ce que nous faisons, chaque jour</div>
+    <div class="row"><div class="v">10</div><div class="k">pôles d'activité<br>complémentaires</div></div>
+    <div class="row"><div class="v">24h</div><div class="k">pour répondre<br>à votre demande</div></div>
+    <div class="row"><div class="v">48h</div><div class="k">pour un devis<br>chiffré</div></div>
+    <div class="row"><div class="v">2024</div><div class="k">fondé à Paris,<br>actif en France</div></div>
+  </div>
+
+  <div id="s6" class="scene center">
+    <div class="q serif">“</div>
+    <div class="t serif">Nous bâtissons un groupe qui <span class="it gold">respire comme un seul.</span></div>
+    <div class="a cond">Thomas Hoenig</div>
+    <div class="a2 cond">Président & Fondateur</div>
+  </div>
+
+  <div id="s7" class="scene center">
+    <img src="gc-mark-light.png" alt="">
+    <div class="name cond">Groupe Cohesif</div>
+    <div class="slogan serif">Bâtir. <span class="it gold">Connecter.</span> Croître.</div>
+    <div class="cta cond">Parlez-nous de votre projet</div>
+    <div class="url cond">groupecohesif.fr</div>
+    <div class="poles cond">Commerce · Access · BTP · Auto · Energy<br>Agro · Négoce · Sport · Net · Leasing</div>
+  </div>
+
+  <div id="botbar"><span id="bb-left">Bâtir · Connecter · Croître</span><span>groupecohesif.fr</span></div>
+  <div id="progress"><i></i></div>
+</div>
+
+<script>
+const ICONS = {
+  bag:   '<svg viewBox="0 0 100 100"><path d="M20 34h60l-5 54H25z"/><path d="M36 40V28a14 14 0 0 1 28 0v12"/></svg>',
+  key:   '<svg viewBox="0 0 100 100"><path d="M14 50 50 18l36 32"/><path d="M24 42v44h52V42"/><circle cx="50" cy="58" r="8"/><path d="M50 66v12"/></svg>',
+  crane: '<svg viewBox="0 0 100 100"><path d="M30 90V14"/><path d="M14 22h76"/><path d="M30 14l-12 8M30 14l54 8"/><path d="M76 22v26"/><path d="M70 48h12v8H70z"/><path d="M18 90h28"/><path d="M30 34l8 8M30 50l8 8M30 66l8 8"/></svg>',
+  car:   '<svg viewBox="0 0 100 100"><path d="M12 64V52l10-18h48l14 18 6 2v10z"/><path d="M26 38l-6 14h60"/><circle cx="30" cy="66" r="9"/><circle cx="72" cy="66" r="9"/></svg>',
+  bolt:  '<svg viewBox="0 0 100 100"><path d="M58 8 22 56h26l-6 36 36-50H52z"/></svg>',
+  wheat: '<svg viewBox="0 0 100 100"><path d="M50 92V20"/><path d="M50 30c-10-2-14-10-14-18 10 2 14 10 14 18zM50 30c10-2 14-10 14-18-10 2-14 10-14 18z"/><path d="M50 50c-10-2-14-10-14-18 10 2 14 10 14 18zM50 50c10-2 14-10 14-18-10 2-14 10-14 18z"/><path d="M50 70c-10-2-14-10-14-18 10 2 14 10 14 18zM50 70c10-2 14-10 14-18-10 2-14 10-14 18z"/></svg>',
+  beams: '<svg viewBox="0 0 100 100"><path d="M10 80h80v10H10zM16 64h68v10H16zM22 48h56v10H22z"/><path d="M38 40V18h24v22"/><path d="M38 29h24"/></svg>',
+  ball:  '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="38"/><path d="M50 34l15 11-6 18H41l-6-18z"/><path d="M50 12v22M65 45l20-8M59 63l12 18M41 63 29 81M35 45l-20-8"/></svg>',
+  spark: '<svg viewBox="0 0 100 100"><path d="M44 14c3 18 8 23 26 26-18 3-23 8-26 26-3-18-8-23-26-26 18-3 23-8 26-26z"/><path d="M76 58c2 9 4 11 12 12-8 1-10 3-12 12-2-9-4-11-12-12 8-1 10-3 12-12z"/></svg>',
+  doc:   '<svg viewBox="0 0 100 100"><path d="M24 10h38l16 16v64H24z"/><path d="M62 10v16h16"/><path d="M60 52a12 12 0 1 0 0 18"/><path d="M38 58h16M38 64h16"/></svg>'
+};
+const POLES = [
+  ['01','Commerce','Distribution','bag','Négoce, distribution et e‑commerce B2B & B2C.'],
+  ['02','Access','Immobilier','key','Deals off-market. Vendeurs et acheteurs qualifiés.'],
+  ['03','BTP','Construction','crane','Du gros œuvre à la rénovation intérieure.'],
+  ['04','Auto','Mobilité','car','Vente, import, flottes pros et pièces de collection.'],
+  ['05','Energy','Énergie','bolt','Bornes IRVE, solaire et pompes à chaleur.'],
+  ['06','Agro','Agroalimentaire','wheat','Équipements IAA sourcés, 35 à 55 % d’économie.'],
+  ['07','Négoce','Matériaux','beams','Bois, métaux, isolants. Réponse sous 24h.'],
+  ['08','Sport','Football','ball','Gestion complète de clubs partout en France.'],
+  ['09','Net','Propreté','spark','Canapés, matelas, vitres et locaux professionnels.'],
+  ['10','Leasing','Financement','doc','Équipez-vous en leasing. Loyers déductibles.']
+];
+
+// Timeline (s)
+const T = { s1:[0,3.6], s2:[3.6,8.0], s3:[8.0,11.0], s4:[11.0,35.0], s5:[35.0,40.5], s6:[40.5,45.5], s7:[45.5,52.0] };
+const DURATION = 52.0;
+const POLE_D = (T.s4[1]-T.s4[0]) / POLES.length; // 2.4s
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const clamp = (x,a=0,b=1) => Math.min(b,Math.max(a,x));
+const p = (t,a,b) => clamp((t-a)/(b-a));
+const eo = x => 1-Math.pow(1-x,3);
+const eio = x => x<.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2;
+const lerp = (a,b,x) => a+(b-a)*x;
+function fadeScene(el,t,[a,b],fin=.45,fout=.45){
+  const o = Math.min(p(t,a,a+fin), 1-p(t,b-fout,b));
+  el.style.opacity = (t>=a && t<b) ? o : 0;
+  return o;
+}
+function rise(el,t,start,dur=.7,dist=60){
+  const k = eo(p(t,start,start+dur));
+  el.style.opacity = k; el.style.transform = `translateY(${(1-k)*dist}px)`;
+}
+
+// chips
+$('#s4 .chips').innerHTML = POLES.map(()=>'<span></span>').join('');
+let curPole = -1;
+function setPole(i){
+  if(i===curPole) return; curPole=i;
+  const [n,name,sector,icon,desc] = POLES[i];
+  $('#s4 .num').textContent = n;
+  $('#s4 .title').textContent = name;
+  $('#s4 .sector').textContent = sector;
+  $('#s4 .desc').textContent = desc;
+  $('#s4 .icon').innerHTML = ICONS[icon];
+  $$('#s4 .icon path, #s4 .icon circle').forEach(e=>{const L=e.getTotalLength();e.style.strokeDasharray=L;e.dataset.len=L;});
+  $$('#s4 .chips span').forEach((s,j)=>s.classList.toggle('on', j<=i));
+}
+
+function render(t){
+  // Fond
+  $('#grid').style.transform = `translateY(${(t*14)%90}px)`;
+  $('#halo').style.transform = `translate(${Math.sin(t*.35)*120}px,${Math.cos(t*.27)*160}px)`;
+  $('#sweep').style.transform = `translateX(${((t*260)%2400)-600}px) rotate(18deg)`;
+  $('#progress i').style.width = (clamp(t/DURATION)*100)+'%';
+  const chrome = p(t,.4,1.4);
+  ['#topbar','#botbar','#progress','#frame'].forEach(s=>$(s).style.opacity = chrome*(1-p(t,T.s7[0],T.s7[0]+.6)*.0));
+  $$('.corner').forEach(c=>c.style.opacity=chrome);
+
+  // S1 — logo
+  const s1=$('#s1'); fadeScene(s1,t,T.s1,.01,.5);
+  const lk = eo(p(t,0,1.4));
+  $('#s1 img').style.transform = `scale(${lerp(.7,1,lk)})`; $('#s1 img').style.opacity = lk;
+  $('#s1 img').style.filter = `blur(${(1-lk)*14}px)`;
+  rise($('#s1 .kicker'),t,.9); rise($('#s1 .name'),t,1.15);
+  $('#s1 .name').style.letterSpacing = lerp(.5,.18,eo(p(t,1.15,2.4)))+'em';
+  $('#s1 .rule').style.width = (eo(p(t,1.6,2.6))*420)+'px';
+  s1.style.transform = `scale(${1+p(t,3.0,3.6)*.06})`;
+
+  // S2 — slogan
+  const s2=$('#s2'); fadeScene(s2,t,T.s2,.2,.45);
+  $$('#s2 .w').forEach((w,i)=>{
+    const st=T.s2[0]+.25+i*.75, k=eo(p(t,st,st+.8));
+    w.style.opacity=k; w.style.transform=`translateY(${(1-k)*110}px)`; w.style.filter=`blur(${(1-k)*10}px)`;
+  });
+  rise($('#s2 .sub'),t,T.s2[0]+2.6);
+
+  // S3 — 10 expertises
+  const s3=$('#s3'); fadeScene(s3,t,T.s3,.3,.35);
+  const cnt = Math.round(eo(p(t,T.s3[0]+.1,T.s3[0]+1.2))*10);
+  $('#s3 .big').textContent = cnt;
+  $('#s3 .big').style.transform = `scale(${lerp(1.25,1,eo(p(t,T.s3[0],T.s3[0]+1.2)))})`;
+  rise($('#s3 .l1'),t,T.s3[0]+.8); rise($('#s3 .l2'),t,T.s3[0]+1.3);
+
+  // S4 — pôles
+  const s4=$('#s4'); fadeScene(s4,t,T.s4,.01,.4);
+  if(t>=T.s4[0] && t<T.s4[1]){
+    const rel=t-T.s4[0], i=Math.min(POLES.length-1,Math.floor(rel/POLE_D)), lt=rel-i*POLE_D;
+    // wipe : couvre en fin de pôle, découvre au début du suivant
+    const wIn = i<POLES.length-1 ? eio(p(lt,POLE_D-.28,POLE_D)) : 0;
+    const wOut = 1-eio(p(lt,0,.3));
+    const wipe=$('#s4 .wipe');
+    if(i===0 && rel<.3){ wipe.style.transform='scaleX(0)'; }
+    else if(wOut>0 && lt<.3){ wipe.style.transformOrigin='right'; wipe.style.transform=`scaleX(${wOut})`; }
+    else { wipe.style.transformOrigin='left'; wipe.style.transform=`scaleX(${wIn})`; }
+    setPole(i);
+    const b=.12;
+    const nk=eo(p(lt,b,b+.7));
+    $('#s4 .num').style.opacity=nk; $('#s4 .num').style.transform=`translateX(${(1-nk)*-80}px)`;
+    $$('#s4 .icon path, #s4 .icon circle').forEach(e=>{e.style.strokeDashoffset=e.dataset.len*(1-eio(p(lt,b+.1,b+1.1)));});
+    const ic=$('#s4 .icon'); ic.style.opacity=p(lt,b,b+.3); ic.style.transform=`rotate(${(1-eo(p(lt,b,b+1)))*-8}deg)`;
+    rise($('#s4 .sector'),lt,b+.1,.5,40);
+    $('#s4 .bar').style.width=(eo(p(lt,b+.2,b+.8))*240)+'px';
+    rise($('#s4 .brand'),lt,b+.2,.5,40);
+    rise($('#s4 .title'),lt,b+.3,.6,90);
+    rise($('#s4 .desc'),lt,b+.6,.6,50);
+    $('#s4 .content').style.transform=`translateX(${-lt*6}px)`;
+    $('#tb-right').textContent = 'Pôle '+POLES[i][0]+' / 10';
+  } else {
+    $('#tb-right').textContent = 'Paris · France';
+  }
+
+  // S5 — chiffres
+  const s5=$('#s5'); fadeScene(s5,t,T.s5,.3,.45);
+  rise($('#s5 .head'),t,T.s5[0]+.1);
+  $$('#s5 .row').forEach((r,i)=>{
+    const st=T.s5[0]+.35+i*.45; const k=eo(p(t,st,st+.7));
+    r.style.opacity=k; r.style.transform=`translateX(${(1-k)*-120}px)`;
+  });
+
+  // S6 — citation
+  const s6=$('#s6'); fadeScene(s6,t,T.s6,.4,.5);
+  rise($('#s6 .q'),t,T.s6[0]+.1); rise($('#s6 .t'),t,T.s6[0]+.4,.9,70);
+  rise($('#s6 .a'),t,T.s6[0]+1.5); rise($('#s6 .a2'),t,T.s6[0]+1.7);
+
+  // S7 — fin
+  const s7=$('#s7'); fadeScene(s7,t,T.s7,.5,.01);
+  const k7=eo(p(t,T.s7[0],T.s7[0]+1.2));
+  $('#s7 img').style.opacity=k7; $('#s7 img').style.transform=`scale(${lerp(.8,1,k7)})`;
+  rise($('#s7 .name'),t,T.s7[0]+.4); rise($('#s7 .slogan'),t,T.s7[0]+.7);
+  rise($('#s7 .cta'),t,T.s7[0]+1.3); rise($('#s7 .url'),t,T.s7[0]+1.5);
+  rise($('#s7 .poles'),t,T.s7[0]+1.9);
+  const pulse = t>T.s7[0]+2.5 ? (Math.sin((t-T.s7[0])*3)*.5+.5) : 0;
+  $('#s7 .url').style.boxShadow = `0 0 ${20+pulse*40}px rgba(201,168,76,${.15+pulse*.25})`;
+}
+window.render = render;
+window.DURATION = DURATION;
+// Aperçu navigateur : lecture en temps réel
+if(!location.search.includes('capture')){
+  const t0=performance.now();
+  (function loop(){ render(((performance.now()-t0)/1000)%DURATION); requestAnimationFrame(loop); })();
+}
+</script>
+</body>
+</html>
